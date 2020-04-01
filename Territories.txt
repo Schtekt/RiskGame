@@ -1,9 +1,14 @@
-a Eastern Australia
-a Indonesia
-a New Guinea
-a Western Australia
+c 2 Australia
+t Eastern Australia
+t Indonesia
+t New Guinea
+t Western Australia
 n 0 2
 n 0 3
 n 1 2
 n 1 3
 n 2 3
+i 0 0
+i 0 1
+i 0 2
+i 0 3

@@ -5,19 +5,19 @@ Player::Player(const std::string& name)
 	m_name = name;
 }
 
-void Player::AddArea(Area* area)
+void Player::AddArea(Territory* area)
 {
-	m_ownedAreas.push_back(area);
+	m_ownedTerritories.push_back(area);
 }
 
-void Player::RemoveArea(Area* area)
+void Player::RemoveArea(Territory* area)
 {
-	auto owned = m_ownedAreas.begin();
-	while (owned != m_ownedAreas.end())
+	auto owned = m_ownedTerritories.begin();
+	while (owned != m_ownedTerritories.end())
 	{
 		if (*owned == area)
 		{
-			m_ownedAreas.erase(owned);
+			m_ownedTerritories.erase(owned);
 			break;
 		}
 	}

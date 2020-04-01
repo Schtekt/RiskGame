@@ -9,7 +9,7 @@ int main()
 	Menu menu;
     Game game;
 
-    game.LoadAreas("../Territories.txt");
+    game.LoadTerritories("../Territories.txt");
 
     while (window.isOpen())
     {

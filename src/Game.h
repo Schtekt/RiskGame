@@ -1,16 +1,24 @@
 #ifndef GAME_H
 #define GAME_H
 #include "Player.h"
+struct Continent
+{
+public:
+	std::string Name;
+	std::vector<Territory*> Territories;
+	unsigned int BonusScore;
+};
 class Game
 {
 private:
 	std::vector<Player*> m_players;
-	std::vector<Area*> m_areas;
+	std::vector<Territory*> m_territories;
+	std::vector<Continent*> m_continents;
 public:
 	Game();
 	virtual ~Game();
 	void AddPlayer(const std::string& name);
-	void LoadAreas(const char* path);
+	void LoadTerritories(const char* path);
 };
 
 #endif
