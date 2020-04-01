@@ -1,8 +1,8 @@
-workspace "VillanGame"
+workspace "RiskGame"
     configurations { "Debug", "Release" }
     location "build"
         
-    project "VillanGame"
+    project "RiskGame"
     kind "ConsoleApp"
     language "C++"
     targetdir "bin/%{cfg.buildcfg}"
