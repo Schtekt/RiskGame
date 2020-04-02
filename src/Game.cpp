@@ -3,7 +3,7 @@
 #include <sstream>
 #include <iostream>
 
-Game::Game()
+Game::Game(const sf::Font& font): m_font(font)
 {
 	if (m_tex.loadFromFile("../dependencies/map.png") && m_redScaleData.loadFromFile("../dependencies/mapRedScale.png"))
 	{
@@ -49,17 +49,24 @@ void Game::run(sf::RenderWindow* window)
 				{
 					unsigned int colVal = col.r;
 					Territory* tmp = m_territoryMapping.at(colVal);
-					//std::map<unsigned int, Territory*>::iterator it = m_territoryMapping.find(colVal);
-					//Territory* tmp = it->second;
 					std::cout << tmp->GetName() << std::endl;
 				}
 			}
+		for (int i = 0; i < m_troopCounts.size(); i++)
+		{
+			m_troopCounts[i]->Txt.setString(std::to_string(m_troopCounts[i]->Territory->GetArmyCount()));
+		}
 	}
 }
 
 void Game::render(sf::RenderWindow* window)
 {
 	window->draw(m_sprite);
+	for (int i = 0; i < m_troopCounts.size(); i++)
+	{
+		window->draw(m_troopCounts[i]->Shape);
+		window->draw(m_troopCounts[i]->Txt);
+	}
 }
 
 void Game::AddPlayer(const std::string& name)
@@ -165,6 +172,22 @@ void Game::LoadTerritories(const char* path)
 				tmp.first = colVal;
 				tmp.second = m_territories[ter];
 				m_territoryMapping.insert(tmp);
+			}
+			else if (line[0] == 'p')
+			{
+				unsigned int territory;
+				unsigned int x;
+				unsigned int y;
+
+				ss >> junk >> territory >> x >> y;
+
+				TroopCount* tc = new TroopCount(m_font);
+				tc->Territory = m_territories[territory];
+				tc->Shape.setPosition(x, y);
+				tc->Shape.setFillColor(sf::Color::White);
+				tc->Txt.setPosition(x + 5, y);
+				tc->Txt.setString(std::to_string(tc->Territory->GetArmyCount()));
+				m_troopCounts.push_back(tc);
 			}
 			ss.str("");
 			ss.clear();
