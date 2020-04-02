@@ -17,7 +17,9 @@ void Menu::run(sf::RenderWindow* window)
 			window->close();
 		if (event.type == sf::Event::MouseButtonPressed) {
 			if (button.isClicked(sf::Mouse::getPosition(*window))) {
-				StateManager::getInstance().push(new Game);
+				Game* game = new Game();
+				game->LoadTerritories("../territories.txt");
+				StateManager::getInstance().push(game);
 			}
 		}
 	}

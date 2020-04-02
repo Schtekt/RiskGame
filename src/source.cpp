@@ -5,7 +5,7 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Risk Game");
+    sf::RenderWindow window(sf::VideoMode(1600, 900), "Risk Game");
 
 	Menu menu;
 	StateManager::getInstance().push(&menu);

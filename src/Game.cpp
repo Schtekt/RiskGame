@@ -1,8 +1,14 @@
 #include "Game.h"
 #include <fstream>
 #include <sstream>
+#include <iostream>
+
 Game::Game()
 {
+	if (m_tex.loadFromFile("../dependencies/map.png") && m_redScaleData.loadFromFile("../dependencies/mapRedScale.png"))
+	{
+		m_sprite.setTexture(m_tex, true);
+	}
 }
 
 Game::~Game()
@@ -34,11 +40,26 @@ void Game::run(sf::RenderWindow* window)
 	{
 		if (event.type == sf::Event::Closed)
 			window->close();
+		if(event.type == sf::Event::MouseButtonPressed)
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+			{
+				sf::Vector2i pos = sf::Mouse::getPosition(*window);
+				sf::Color col = m_redScaleData.getPixel(pos.x, pos.y);
+				if (col != sf::Color::White)
+				{
+					unsigned int colVal = col.r;
+					Territory* tmp = m_territoryMapping.at(colVal);
+					//std::map<unsigned int, Territory*>::iterator it = m_territoryMapping.find(colVal);
+					//Territory* tmp = it->second;
+					std::cout << tmp->GetName() << std::endl;
+				}
+			}
 	}
 }
 
 void Game::render(sf::RenderWindow* window)
 {
+	window->draw(m_sprite);
 }
 
 void Game::AddPlayer(const std::string& name)
@@ -134,6 +155,16 @@ void Game::LoadTerritories(const char* path)
 					break;
 				}
 				m_cards.push_back(c);
+			}
+			else if (line[0] == 'm')
+			{
+				unsigned int colVal;
+				unsigned int ter;
+				std::pair<unsigned int, Territory*> tmp;
+				ss >> junk >> colVal >> ter;
+				tmp.first = colVal;
+				tmp.second = m_territories[ter];
+				m_territoryMapping.insert(tmp);
 			}
 			ss.str("");
 			ss.clear();

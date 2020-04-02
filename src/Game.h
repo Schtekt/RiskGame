@@ -2,6 +2,7 @@
 #define GAME_H
 #include "Player.h"
 #include "StateManager.h"
+#include <unordered_map>
 
 struct Card
 {
@@ -31,6 +32,11 @@ private:
 	std::vector<Territory*> m_territories;
 	std::vector<Continent*> m_continents;
 	std::vector<Card*> m_cards;
+	std::map<unsigned int, Territory*> m_territoryMapping;
+
+	sf::Image m_redScaleData;
+	sf::Texture m_tex;
+	sf::Sprite m_sprite;
 public:
 	Game();
 	virtual ~Game();
