@@ -28,6 +28,19 @@ Game::~Game()
 	}
 }
 
+void Game::run(sf::RenderWindow* window)
+{
+	while (window->pollEvent(event))
+	{
+		if (event.type == sf::Event::Closed)
+			window->close();
+	}
+}
+
+void Game::render(sf::RenderWindow* window)
+{
+}
+
 void Game::AddPlayer(const std::string& name)
 {
 	m_players.push_back(new Player(name));

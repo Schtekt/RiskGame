@@ -10,9 +10,9 @@ Button::Button()
 Button::Button(sf::Vector2f pos, std::string string)
 {
 	box.setPosition(pos);
-	box.setSize(sf::Vector2f(100,100));
 	text.setPosition(100, 100);
 	text.setString(string);
+	box.setSize(sf::Vector2f(string.size()*20 + 4, 36));
 }
 
 void Button::render(sf::RenderWindow* window)
@@ -38,6 +38,7 @@ void Button::setPosition(sf::Vector2f pos)
 void Button::setString(std::string string)
 {
 	text.setString(string);
+	box.setSize(sf::Vector2f(string.size() * 20 + 4, 36));
 }
 
 void Button::setFont(sf::Font *font)

@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 #include "Player.h"
+#include "StateManager.h"
 
 struct Card
 {
@@ -23,7 +24,7 @@ public:
 	unsigned int BonusScore;
 };
 
-class Game
+class Game : public State
 {
 private:
 	std::vector<Player*> m_players;
@@ -33,6 +34,10 @@ private:
 public:
 	Game();
 	virtual ~Game();
+
+	void run(sf::RenderWindow* window);
+	void render(sf::RenderWindow* window);
+
 	void AddPlayer(const std::string& name);
 	void LoadTerritories(const char* path);
 };

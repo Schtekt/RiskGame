@@ -1,22 +1,22 @@
 #include <SFML/Graphics.hpp>
 #include "Menu.h"
 #include "Game.h"
+#include "StateManager.h"
 
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(800, 600), "Risk Game");
 
 	Menu menu;
-    Game game;
-
-    game.LoadTerritories("../Territories.txt");
+	StateManager::getInstance().push(&menu);
 
     while (window.isOpen())
     {
 
         window.clear();
 
-		menu.run(&window);
+		StateManager::getInstance().run(&window);
+		StateManager::getInstance().render(&window);
 
         window.display();
     }

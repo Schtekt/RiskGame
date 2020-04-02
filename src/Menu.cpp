@@ -5,8 +5,8 @@ Menu::Menu()
 	font.loadFromFile("../arial.ttf");
 
 	button.setFont(&font);
-	button.setString("TEST");
-	button.setPosition(sf::Vector2f(100, 100));
+	button.setString("Game");
+	button.setPosition(sf::Vector2f(400, 100));
 }
 
 void Menu::run(sf::RenderWindow* window)
@@ -16,11 +16,16 @@ void Menu::run(sf::RenderWindow* window)
 		if (event.type == sf::Event::Closed)
 			window->close();
 		if (event.type == sf::Event::MouseButtonPressed) {
-			if (button.isClicked(sf::Mouse::getPosition(*window)))
-				button.setString("YES");
+			if (button.isClicked(sf::Mouse::getPosition(*window))) {
+				StateManager::getInstance().push(new Game);
+			}
 		}
 	}
 
 
 	button.render(window);
+}
+
+void Menu::render(sf::RenderWindow* window)
+{
 }
