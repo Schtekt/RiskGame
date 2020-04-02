@@ -45,7 +45,7 @@ void Game::run(sf::RenderWindow* window)
 			{
 				sf::Vector2i pos = sf::Mouse::getPosition(*window);
 				sf::Color col = m_redScaleData.getPixel(pos.x, pos.y);
-				if (col != sf::Color::White)
+				if (col.a != 0)
 				{
 					unsigned int colVal = col.r;
 					Territory* tmp = m_territoryMapping.at(colVal);
