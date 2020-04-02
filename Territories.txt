@@ -215,4 +215,57 @@ n 20 30
 n 23 37
 // South America (Starts at 29)
 n 32 35
-// North America (Starts at 33)
+
+// CARDS
+
+// australia
+b 0 i
+b 1 c
+b 2 c
+b 3 a
+// Asia
+b 4 i
+b 5 c
+b 6 i
+b 7 i
+b 8 i
+b 9 c
+b 10 a
+b 11 a
+b 12 a
+b 13 a
+b 14 c
+b 15 c
+// Africa
+b 16 c
+b 17 a
+b 18 i
+b 19 i
+b 20 i
+b 21 a
+// Europe
+b 22 c
+b 23 i
+b 24 c
+b 25 a
+b 26 c
+b 27 a
+b 28 i
+// South America
+b 29 i
+b 30 a
+b 31 c
+b 32 a
+// North America
+b 33 i
+b 34 i
+b 35 c
+b 36 a
+b 37 c
+b 38 a
+b 39 c
+b 40 a
+b 41 i
+// Jokers
+b -1 j
+b -1 j

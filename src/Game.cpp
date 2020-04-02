@@ -7,6 +7,11 @@ Game::Game()
 
 Game::~Game()
 {
+	for (unsigned int i = 0; i < m_cards.size(); i++)
+	{
+		delete m_cards[i];
+	}
+
 	for (unsigned int i = 0; i < m_continents.size(); i++)
 	{
 		delete m_continents[i];
@@ -85,6 +90,37 @@ void Game::LoadTerritories(const char* path)
 				unsigned int territory;
 				ss >> junk >> continent >> territory;
 				m_continents[continent]->Territories.push_back(m_territories[territory]);
+			}
+			else if (line[0] == 'b')
+			{
+				unsigned int territory;
+				char type;
+
+				ss >> junk >> territory >> type;
+
+				Card* c = new Card;
+				switch (type)
+				{
+				case 'i':
+					c->type = Card::ArmyType::Infantry;
+					c->territory = m_territories[territory];
+					break;
+				case 'c':
+					c->type = Card::ArmyType::Cavalry;
+					c->territory = m_territories[territory];
+					break;
+				case 'a':
+					c->type = Card::ArmyType::Artillery;
+					c->territory = m_territories[territory];
+					break;
+				case 'j':
+					c->type = Card::ArmyType::Joker;
+					c->territory = nullptr;
+					break;
+				default:
+					break;
+				}
+				m_cards.push_back(c);
 			}
 			ss.str("");
 			ss.clear();

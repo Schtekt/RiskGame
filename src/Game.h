@@ -1,6 +1,20 @@
 #ifndef GAME_H
 #define GAME_H
 #include "Player.h"
+
+struct Card
+{
+	enum class ArmyType
+	{
+		Infantry,
+		Cavalry,
+		Artillery,
+		Joker
+	};
+	Territory* territory;
+	ArmyType type;
+};
+
 struct Continent
 {
 public:
@@ -8,12 +22,14 @@ public:
 	std::vector<Territory*> Territories;
 	unsigned int BonusScore;
 };
+
 class Game
 {
 private:
 	std::vector<Player*> m_players;
 	std::vector<Territory*> m_territories;
 	std::vector<Continent*> m_continents;
+	std::vector<Card*> m_cards;
 public:
 	Game();
 	virtual ~Game();
