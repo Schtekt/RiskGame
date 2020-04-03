@@ -19,7 +19,7 @@ void Game::shuffle(std::vector<Territory*>& list)
 
 Game::Game(const sf::Font& font): m_font(font)
 {
-	if (m_tex.loadFromFile("../dependencies/map.png") && m_redScaleData.loadFromFile("../dependencies/mapRedScale.png"))
+	if (m_tex.loadFromFile("../assets/map.png") && m_redScaleData.loadFromFile("../assets/mapRedScale.png"))
 	{
 		m_sprite.setTexture(m_tex, true);
 	}
