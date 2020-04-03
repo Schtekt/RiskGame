@@ -19,6 +19,13 @@ void Menu::run(sf::RenderWindow* window)
 			if (button.isClicked(sf::Mouse::getPosition(*window))) {
 				Game* game = new Game(font);
 				game->LoadTerritories("../territories.txt");
+				//=============TESTING=============================
+				game->AddPlayer("Jacob Andersson", sf::Color::Red);
+				game->AddPlayer("Leo Wikström", sf::Color::Green);
+				game->AddPlayer("Tim Johansson", sf::Color::Blue);
+				game->AddPlayer("Anton Åsbrink", sf::Color::Yellow);
+				//=================================================
+				game->PlacePlayersRandom();
 				StateManager::getInstance().push(game);
 			}
 		}

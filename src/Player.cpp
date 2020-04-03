@@ -1,11 +1,10 @@
 #include "Player.h"
 
-Player::Player(const std::string& name)
+Player::Player(const std::string& name, const sf::Color& color): m_name(name), m_color(color)
 {
-	m_name = name;
 }
 
-void Player::AddArea(Territory* area)
+void Player::AddTerritory(Territory* area)
 {
 	m_ownedTerritories.push_back(area);
 }
@@ -26,4 +25,9 @@ void Player::RemoveArea(Territory* area)
 std::string Player::GetName() const
 {
 	return m_name;
+}
+
+sf::Color Player::GetColor() const
+{
+	return m_color;
 }

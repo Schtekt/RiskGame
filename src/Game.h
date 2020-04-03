@@ -25,20 +25,6 @@ public:
 	unsigned int BonusScore;
 };
 
-struct TroopCount
-{
-public:
-	TroopCount(const sf::Font& font, unsigned int shapeSize = 10): Shape(shapeSize), Territory(nullptr)
-	{
-		Txt.setFont(font);
-		Txt.setFillColor(sf::Color::Black);
-		Txt.setCharacterSize(15);
-	};
-	Territory* Territory;
-	sf::CircleShape Shape;
-	sf::Text Txt;
-};
-
 class Game : public State
 {
 private:
@@ -53,6 +39,7 @@ private:
 	sf::Texture m_tex;
 	sf::Sprite m_sprite;
 	sf::Font m_font;
+	void shuffle(std::vector<Territory*>& list);
 public:
 	Game(const sf::Font &font);
 	virtual ~Game();
@@ -60,8 +47,10 @@ public:
 	void run(sf::RenderWindow* window);
 	void render(sf::RenderWindow* window);
 
-	void AddPlayer(const std::string& name);
+	void AddPlayer(const std::string& name, const sf::Color& color);
+	
 	void LoadTerritories(const char* path);
+	void PlacePlayersRandom();
 };
 
 #endif

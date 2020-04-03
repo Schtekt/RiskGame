@@ -2,6 +2,20 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <random>
+
+void Game::shuffle(std::vector<Territory*>& list)
+{
+	srand(time(NULL));
+	unsigned int sizeOfList = list.size();
+	for (int i = 0; i < sizeOfList; i++)
+	{
+		int newPos = rand() % sizeOfList;
+		Territory* tmp = list[i];
+		list[i] = list[newPos];
+		list[newPos] = tmp;
+	}
+}
 
 Game::Game(const sf::Font& font): m_font(font)
 {
@@ -36,6 +50,11 @@ Game::~Game()
 
 void Game::run(sf::RenderWindow* window)
 {
+	for (int i = 0; i < m_territories.size(); i++)
+	{
+		m_territories[i]->GetTroopCountToken()->Txt.setString(std::to_string(m_territories[i]->GetArmyCount()));
+	}
+
 	while (window->pollEvent(event))
 	{
 		if (event.type == sf::Event::Closed)
@@ -52,10 +71,6 @@ void Game::run(sf::RenderWindow* window)
 					std::cout << tmp->GetName() << std::endl;
 				}
 			}
-		for (int i = 0; i < m_troopCounts.size(); i++)
-		{
-			m_troopCounts[i]->Txt.setString(std::to_string(m_troopCounts[i]->Territory->GetArmyCount()));
-		}
 	}
 }
 
@@ -69,9 +84,9 @@ void Game::render(sf::RenderWindow* window)
 	}
 }
 
-void Game::AddPlayer(const std::string& name)
+void Game::AddPlayer(const std::string& name, const sf::Color& color)
 {
-	m_players.push_back(new Player(name));
+	m_players.push_back(new Player(name, color));
 }
 
 void Game::LoadTerritories(const char* path)
@@ -188,9 +203,42 @@ void Game::LoadTerritories(const char* path)
 				tc->Txt.setPosition(x + 5, y);
 				tc->Txt.setString(std::to_string(tc->Territory->GetArmyCount()));
 				m_troopCounts.push_back(tc);
+				m_territories[territory]->AddTroopCountToken(tc);
 			}
 			ss.str("");
 			ss.clear();
+		}
+
+		for (int i = 0; i < m_troopCounts.size(); i++)
+		{
+			m_troopCounts[i]->Txt.setString(std::to_string(m_troopCounts[i]->Territory->GetArmyCount()));
+		}
+	}
+}
+
+void Game::PlacePlayersRandom()
+{
+	std::vector<Territory*> tmp = m_territories;
+	shuffle(tmp);
+	unsigned int perPlayer = m_territories.size() / m_players.size();
+	for (int i = 0; i < m_players.size(); i++)
+	{
+		for (int j = i * perPlayer; j < perPlayer * (1 + i); j++)
+		{
+			m_players[i]->AddTerritory(tmp[j]);
+			TroopCount* tc = tmp[j]->GetTroopCountToken();
+			tc->Shape.setFillColor(m_players[i]->GetColor());
+			tmp[j]->SetArmyCount(1);
+		}
+	}
+	if (perPlayer * m_players.size() < m_territories.size())
+	{
+		int j = 0;
+		for (int i = perPlayer * m_players.size(); i < m_territories.size(); i++)
+		{
+			m_players[j]->AddTerritory(tmp[i]);
+			tmp[i]->GetTroopCountToken()->Shape.setFillColor(m_players[j++]->GetColor());
+			tmp[i]->SetArmyCount(1);
 		}
 	}
 }
