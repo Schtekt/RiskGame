@@ -41,7 +41,7 @@ private:
 	sf::Font m_font;
 	void shuffle(std::vector<Territory*>& list);
 public:
-	Game(const sf::Font &font);
+	Game(const sf::Font &font, const char* pathToMap);
 	virtual ~Game();
 
 	void run(sf::RenderWindow* window);

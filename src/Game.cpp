@@ -17,12 +17,20 @@ void Game::shuffle(std::vector<Territory*>& list)
 	}
 }
 
-Game::Game(const sf::Font& font): m_font(font)
+Game::Game(const sf::Font& font, const char* pathToMap): m_font(font)
 {
 	if (m_tex.loadFromFile("../assets/map.png") && m_redScaleData.loadFromFile("../assets/mapRedScale.png"))
 	{
 		m_sprite.setTexture(m_tex, true);
 	}
+	LoadTerritories(pathToMap);
+	//=============TESTING=============================
+	AddPlayer("Jacob Andersson", sf::Color::Red);
+	AddPlayer("Leo Wikström", sf::Color::Green);
+	AddPlayer("Tim Johansson", sf::Color::Color(100, 100, 250));
+	AddPlayer("Anton Åsbrink", sf::Color::Yellow);
+	PlacePlayersRandom();
+	//=================================================
 }
 
 Game::~Game()
