@@ -17,13 +17,15 @@ void Game::shuffle(std::vector<Territory*>& list)
 	}
 }
 
-Game::Game(const sf::Font& font, const char* pathToMap): m_font(font)
+
+Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selected(nullptr)
 {
 	if (m_tex.loadFromFile("../assets/map.png") && m_redScaleData.loadFromFile("../assets/mapRedScale.png"))
 	{
 		m_sprite.setTexture(m_tex, true);
 	}
 	LoadTerritories(pathToMap);
+
 	//=============TESTING=============================
 	AddPlayer("Jacob Andersson", sf::Color::Red);
 	AddPlayer("Leo Wikström", sf::Color::Green);
@@ -58,11 +60,6 @@ Game::~Game()
 
 void Game::run(sf::RenderWindow* window)
 {
-	for (int i = 0; i < m_territories.size(); i++)
-	{
-		m_territories[i]->GetTroopCountToken()->Txt.setString(std::to_string(m_territories[i]->GetArmyCount()));
-	}
-
 	while (window->pollEvent(event))
 	{
 		if (event.type == sf::Event::Closed)
@@ -71,12 +68,27 @@ void Game::run(sf::RenderWindow* window)
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
 			{
 				sf::Vector2i pos = sf::Mouse::getPosition(*window);
-				sf::Color col = m_redScaleData.getPixel(pos.x, pos.y);
-				if (col.a != 0)
+
+				if (m_redScaleData.getSize().x >= pos.x && m_redScaleData.getSize().y >= pos.y)
 				{
-					unsigned int colVal = col.r;
-					Territory* tmp = m_territoryMapping.at(colVal);
-					std::cout << tmp->GetName() << std::endl;
+					sf::Color col = m_redScaleData.getPixel(pos.x, pos.y);
+					if (m_selected)
+					{
+						m_selected->GetTroopCountToken()->Shape.setOutlineThickness(0.f);
+					}
+					if (col.a != 0)
+					{
+						unsigned int colVal = col.r;
+						Territory* tmp = m_territoryMapping.at(colVal);
+						m_selected = tmp;
+						m_selected->GetTroopCountToken()->Shape.setOutlineColor(sf::Color::Color(255, 165, 50));
+						m_selected->GetTroopCountToken()->Shape.setOutlineThickness(10.f);
+						std::cout << tmp->GetName() << std::endl;
+					}
+					else
+					{
+						m_selected = nullptr;
+					}
 				}
 			}
 	}
@@ -209,17 +221,13 @@ void Game::LoadTerritories(const char* path)
 				tc->Shape.setPosition(x, y);
 				tc->Shape.setFillColor(sf::Color::White);
 				tc->Txt.setPosition(x + 5, y);
+				tc->Territory->SetArmyCount(1);
 				tc->Txt.setString(std::to_string(tc->Territory->GetArmyCount()));
 				m_troopCounts.push_back(tc);
 				m_territories[territory]->AddTroopCountToken(tc);
 			}
 			ss.str("");
 			ss.clear();
-		}
-
-		for (int i = 0; i < m_troopCounts.size(); i++)
-		{
-			m_troopCounts[i]->Txt.setString(std::to_string(m_troopCounts[i]->Territory->GetArmyCount()));
 		}
 	}
 }

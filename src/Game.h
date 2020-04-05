@@ -35,6 +35,7 @@ private:
 	std::map<unsigned int, Territory*> m_territoryMapping;
 	std::vector<TroopCount*> m_troopCounts;
 
+	Territory* m_selected;
 	sf::Image m_redScaleData;
 	sf::Texture m_tex;
 	sf::Sprite m_sprite;
