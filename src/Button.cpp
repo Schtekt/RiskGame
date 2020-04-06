@@ -45,3 +45,8 @@ void Button::setFont(sf::Font *font)
 {
 	text.setFont(*font);
 }
+
+std::string Button::getString() const
+{
+	return text.getString();
+}

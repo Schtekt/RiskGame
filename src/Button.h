@@ -20,6 +20,8 @@ public:
 	void setString(std::string string);
 
 	void setFont(sf::Font *font);
+
+	std::string getString() const;
 };
 
 #endif
