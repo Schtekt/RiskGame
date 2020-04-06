@@ -13,8 +13,10 @@ private:
 	Button m_btnRemoveToDeploy;
 	Button m_lblTotalToDeploy;
 	Button m_btnConfirm;
+	Button m_lblSelected;
 
 	Territory* m_selectedTerritory;
+	unsigned int calcToDeploy();
 public:
 	DraftPhase(Game* game, Player* player, sf::Font* font);
 	~DraftPhase();
