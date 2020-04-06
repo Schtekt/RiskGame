@@ -20,6 +20,16 @@ void Game::shuffle(std::vector<Territory*>& list)
 	}
 }
 
+void Game::highlightPlayer(int index)
+{
+	for (unsigned int i = 0; i < m_playerButtons.size(); i++)
+	{
+		m_playerButtons[i]->setOutline(0, sf::Color::White);
+	}
+	sf::Color* col = &m_players[index]->GetColor();
+	m_playerButtons[index]->setOutline(5, sf::Color::Color(255 - col->r, 255 - col->g, 255 - col->b));
+}
+
 
 Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selected(nullptr), m_playerTurn(0)
 {
@@ -39,6 +49,17 @@ Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selecte
 	AddPlayer("Anton Åsbrink", sf::Color::Yellow);
 	PlacePlayersRandom();
 	//=================================================
+
+	for (int i = 0; i < m_players.size(); i++)
+	{
+		Button* btn = new Button;
+		btn->setFont(&m_font);
+		btn->setColor(m_players[i]->GetColor());
+		btn->setString(m_players[i]->GetName());
+		btn->setPosition(sf::Vector2f(1300, (btn->getSize().y + 10) * i));
+		m_playerButtons.push_back(btn);
+	}
+	highlightPlayer(0);
 	m_phase = nullptr;
 }
 
@@ -62,6 +83,11 @@ Game::~Game()
 	for (unsigned int i = 0; i < m_players.size(); i++)
 	{
 		delete m_players[i];
+	}
+
+	for (unsigned int i = 0; i < m_playerButtons.size(); i++)
+	{
+		delete m_playerButtons[i];
 	}
 }
 
@@ -144,6 +170,7 @@ void Game::run(sf::RenderWindow* window)
 						}
 						m_phase = nullptr;
 						m_btnNextPhase.setString("Start turn");
+						highlightPlayer(m_playerTurn);
 					}
 				}
 			}
@@ -158,6 +185,12 @@ void Game::render(sf::RenderWindow* window)
 		window->draw(m_troopCounts[i]->Shape);
 		window->draw(m_troopCounts[i]->Txt);
 	}
+
+	for (unsigned int i = 0; i < m_playerButtons.size(); i++)
+	{
+		m_playerButtons[i]->render(window);
+	}
+
 	m_btnNextPhase.render(window);
 	if(m_phase)
 		m_phase->render(window);

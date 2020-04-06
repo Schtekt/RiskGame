@@ -20,6 +20,7 @@ public:
 	void setString(std::string string);
 	void setFont(sf::Font *font);
 	void setColor(sf::Color color);
+	void setOutline(float size, sf::Color color);
 
 	std::string getString() const;
 

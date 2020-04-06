@@ -51,6 +51,12 @@ void Button::setColor(sf::Color color)
 	box.setFillColor(color);
 }
 
+void Button::setOutline(float size, sf::Color color)
+{
+	box.setOutlineColor(color);
+	box.setOutlineThickness(size);
+}
+
 std::string Button::getString() const
 {
 	return text.getString();

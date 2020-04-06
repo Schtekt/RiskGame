@@ -44,8 +44,10 @@ private:
 	sf::Font m_font;
 	Phase* m_phase;
 	Button m_btnNextPhase;
+	std::vector<Button*> m_playerButtons;
 	unsigned int m_playerTurn;
 	void shuffle(std::vector<Territory*>& list);
+	void highlightPlayer(int index);
 public:
 	Game(const sf::Font &font, const char* pathToMap);
 	virtual ~Game();
