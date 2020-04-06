@@ -4,6 +4,8 @@
 #include <iostream>
 #include <random>
 #include "DraftPhase.h"
+#include "AttackPhase.h"
+#include "FortifyPhase.h"
 
 void Game::shuffle(std::vector<Territory*>& list)
 {
@@ -19,13 +21,16 @@ void Game::shuffle(std::vector<Territory*>& list)
 }
 
 
-Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selected(nullptr)
+Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selected(nullptr), m_playerTurn(0)
 {
 	if (m_tex.loadFromFile("../assets/map.png") && m_redScaleData.loadFromFile("../assets/mapRedScale.png"))
 	{
 		m_sprite.setTexture(m_tex, true);
 	}
 	LoadTerritories(pathToMap);
+	m_btnNextPhase.setFont(&m_font);
+	m_btnNextPhase.setPosition(sf::Vector2f(1000, 620));
+	m_btnNextPhase.setString("Start turn");
 
 	//=============TESTING=============================
 	AddPlayer("Jacob Andersson", sf::Color::Red);
@@ -34,7 +39,7 @@ Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selecte
 	AddPlayer("Anton Åsbrink", sf::Color::Yellow);
 	PlacePlayersRandom();
 	//=================================================
-	m_phase = new DraftPhase(this, m_players[3], &m_font);
+	m_phase = nullptr;
 }
 
 Game::~Game()
@@ -92,9 +97,41 @@ void Game::run(sf::RenderWindow* window)
 						m_selected = nullptr;
 					}
 				}
+					
+				if(m_phase)
+					m_phase->run(window);
 
-
-				m_phase->run(window);
+				if (m_btnNextPhase.isClicked(pos))
+				{
+					if (!m_phase)
+					{
+						m_phase = new DraftPhase(this, m_players[m_playerTurn], &m_font);
+						m_btnNextPhase.setString("Go to Attack phase");
+					}
+					else if (dynamic_cast<DraftPhase*>(m_phase))
+					{
+						delete m_phase;
+						m_phase = new AttackPhase(this, m_players[m_playerTurn], &m_font);
+						m_btnNextPhase.setString("Go to Fortify phase");
+					}
+					else if (dynamic_cast<AttackPhase*>(m_phase))
+					{
+						delete m_phase;
+						m_phase = new FortifyPhase(this, m_players[m_playerTurn], &m_font);
+						m_btnNextPhase.setString("End turn");
+					}
+					else if (dynamic_cast<FortifyPhase*>(m_phase))
+					{
+						delete m_phase;
+						m_playerTurn++;
+						if (m_playerTurn >= m_players.size())
+						{
+							m_playerTurn = 0;
+						}
+						m_phase = nullptr;
+						m_btnNextPhase.setString("Start turn");
+					}
+				}
 			}
 	}
 }
@@ -107,7 +144,9 @@ void Game::render(sf::RenderWindow* window)
 		window->draw(m_troopCounts[i]->Shape);
 		window->draw(m_troopCounts[i]->Txt);
 	}
-	m_phase->render(window);
+	m_btnNextPhase.render(window);
+	if(m_phase)
+		m_phase->render(window);
 }
 
 void Game::AddPlayer(const std::string& name, const sf::Color& color)
