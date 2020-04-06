@@ -9,7 +9,7 @@ void Player::AddTerritory(Territory* area)
 	m_ownedTerritories.push_back(area);
 }
 
-void Player::RemoveArea(Territory* area)
+void Player::RemoveOwnership(Territory* area)
 {
 	auto owned = m_ownedTerritories.begin();
 	while (owned != m_ownedTerritories.end())
@@ -30,4 +30,9 @@ std::string Player::GetName() const
 sf::Color Player::GetColor() const
 {
 	return m_color;
+}
+
+unsigned int Player::GetNrOfTerritories() const
+{
+	return m_ownedTerritories.size();
 }

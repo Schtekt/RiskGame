@@ -12,10 +12,11 @@ public:
 	Player(const std::string& name, const sf::Color& color);
 
 	void AddTerritory(Territory* area);
-	void RemoveArea(Territory* area);
+	void RemoveOwnership(Territory* area);
 	
 	std::string GetName() const;
 	sf::Color GetColor() const;
+	unsigned int GetNrOfTerritories() const;
 };
 
 #endif
