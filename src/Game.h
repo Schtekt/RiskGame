@@ -58,6 +58,8 @@ public:
 	void LoadTerritories(const char* path);
 	void PlacePlayersRandom();
 	Territory* GetSelected() const;
+	Continent* GetContinent(unsigned int index) const;
+	unsigned int GetNrOfContinents() const;
 };
 
 #endif

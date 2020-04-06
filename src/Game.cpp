@@ -324,3 +324,13 @@ Territory* Game::GetSelected() const
 {
 	return m_selected;
 }
+
+Continent* Game::GetContinent(unsigned int index) const
+{
+	return m_continents[index];
+}
+
+unsigned int Game::GetNrOfContinents() const
+{
+	return m_continents.size();
+}
