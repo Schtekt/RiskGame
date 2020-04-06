@@ -38,7 +38,7 @@ void Button::setPosition(sf::Vector2f pos)
 void Button::setString(std::string string)
 {
 	text.setString(string);
-	box.setSize(sf::Vector2f((float)(string.size() * 20 + 4), (float)36));
+	box.setSize(sf::Vector2f((float)(text.getLocalBounds().width + 4), (float)36));
 }
 
 void Button::setFont(sf::Font *font)
