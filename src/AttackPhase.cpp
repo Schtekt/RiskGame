@@ -1,5 +1,5 @@
 #include "AttackPhase.h"
-
+#include <iostream>
 void AttackPhase::battle(Territory* attacker, Territory* defender, unsigned int nrOfAttackDice)
 {
 	nrOfAttackDice = std::min(attacker->GetArmyCount(), nrOfAttackDice);
@@ -46,6 +46,21 @@ void AttackPhase::battle(Territory* attacker, Territory* defender, unsigned int 
 			}
 		}
 	}
+
+	// debug puposes!
+	std::cout << attacker->GetOwner()->GetName() + " rolled: ";
+	for (int i = 0; i < nrOfAttackDice; i++)
+	{
+		std::cout << attackDice[i] << " ";
+	}
+	std::cout << std::endl;
+	std::cout << defender->GetOwner()->GetName() + " rolled: ";
+	for (int i = 0; i < nrOfDefDice; i++)
+	{
+		std::cout << defDice[i] << " ";
+	}
+	std::cout << std::endl;
+	std::cout << std::endl;
 
 	// result!
 	for (int i = 0; i < std::min(nrOfDefDice, nrOfAttackDice); i++)
