@@ -7,6 +7,7 @@ private:
 	Territory* m_selected;
 	Territory* m_target;
 	unsigned int m_nrOfDice;
+	bool m_occupy;
 
 	Button m_lblNrOfDice;
 	Button m_btnAddDice;

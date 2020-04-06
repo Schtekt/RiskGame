@@ -63,7 +63,7 @@ void AttackPhase::battle(Territory* attacker, Territory* defender, unsigned int 
 	delete[] defDice;
 }
 
-AttackPhase::AttackPhase(Game* game, Player* player, sf::Font* font): Phase(game, player, font), m_selected(nullptr), m_target(nullptr),m_nrOfDice(3)
+AttackPhase::AttackPhase(Game* game, Player* player, sf::Font* font): Phase(game, player, font), m_selected(nullptr), m_target(nullptr),m_nrOfDice(3), m_occupy(false)
 {
 	m_btnAddDice.setFont(font);
 	m_btnRemoveDice.setFont(font);
@@ -91,96 +91,106 @@ AttackPhase::AttackPhase(Game* game, Player* player, sf::Font* font): Phase(game
 
 void AttackPhase::run(sf::RenderWindow* window)
 {
-	if (m_game->GetSelected())
+	if (!m_occupy)
 	{
-		if (!m_selected)
+		if (m_game->GetSelected())
 		{
-			if (m_game->GetSelected()->GetOwner() == m_currPlayer)
-				m_selected = m_game->GetSelected();
-		}
-		else if (m_game->GetSelected()->GetOwner() != m_currPlayer && m_game->GetSelected() != m_target)
-		{
-			for (unsigned int i = 0; i < m_selected->NrOfNeighbours(); i++)
+			if (!m_selected)
 			{
-				if (m_game->GetSelected() == m_selected->GetNeighbour(i))
+				if (m_game->GetSelected()->GetOwner() == m_currPlayer)
+					m_selected = m_game->GetSelected();
+			}
+			else if (m_game->GetSelected()->GetOwner() != m_currPlayer && m_game->GetSelected() != m_target)
+			{
+				for (unsigned int i = 0; i < m_selected->NrOfNeighbours(); i++)
 				{
-					m_target = m_game->GetSelected();
-					m_nrOfDice = std::min((unsigned int)3, m_selected->GetArmyCount() - 1);
-					if (m_nrOfDice == 0)
+					if (m_game->GetSelected() == m_selected->GetNeighbour(i))
 					{
-						m_selected = nullptr;
-						m_target = nullptr;
+						m_target = m_game->GetSelected();
+						m_nrOfDice = std::min((unsigned int)3, m_selected->GetArmyCount() - 1);
+						if (m_nrOfDice == 0)
+						{
+							m_selected = nullptr;
+							m_target = nullptr;
+						}
+						break;
 					}
-					break;
 				}
 			}
-		}
-		else if(m_game->GetSelected()->GetOwner() == m_currPlayer)
-		{
-			m_selected = m_game->GetSelected();
-		}
-	}
-	else
-	{
-		m_selected = nullptr;
-		m_target = nullptr;
-	}
-
-	if (m_selected)
-	{
-		m_lblSelected.setString(m_selected->GetName());
-		m_lblSelected.setColor(m_selected->GetOwner()->GetColor());
-		if (m_target)
-		{
-			m_lblTarget.setString(m_target->GetName());
-
-			m_lblTarget.setColor(m_target->GetOwner()->GetColor());
-		}
-	}
-
-	if (m_selected && m_target)
-	{
-		if (m_btnAddDice.isClicked(sf::Mouse::getPosition(*window)))
-		{
-			m_nrOfDice++;
-			if (m_nrOfDice > m_selected->GetArmyCount() - 1)
+			else if (m_game->GetSelected()->GetOwner() == m_currPlayer)
 			{
-				m_nrOfDice = m_selected->GetArmyCount() - 1;
+				m_selected = m_game->GetSelected();
 			}
-			else if (m_nrOfDice > 3)
+		}
+		else
+		{
+			m_selected = nullptr;
+			m_target = nullptr;
+		}
+
+		if (m_selected)
+		{
+			m_lblSelected.setString(m_selected->GetName());
+			m_lblSelected.setColor(m_selected->GetOwner()->GetColor());
+			if (m_target)
 			{
-				m_nrOfDice = 3;
+				m_lblTarget.setString(m_target->GetName());
+
+				m_lblTarget.setColor(m_target->GetOwner()->GetColor());
 			}
 		}
 
-		if (m_btnRemoveDice.isClicked(sf::Mouse::getPosition(*window)))
+		if (m_selected && m_target)
 		{
-			m_nrOfDice--;
-			if (m_nrOfDice == 0)
+			if (m_btnAddDice.isClicked(sf::Mouse::getPosition(*window)))
 			{
-				m_nrOfDice = 1;
+				m_nrOfDice++;
+				if (m_nrOfDice > m_selected->GetArmyCount() - 1)
+				{
+					m_nrOfDice = m_selected->GetArmyCount() - 1;
+				}
+				else if (m_nrOfDice > 3)
+				{
+					m_nrOfDice = 3;
+				}
 			}
-		}
 
-		m_lblNrOfDice.setString(std::to_string(m_nrOfDice));
-		m_btnAddDice.setPosition(sf::Vector2f(m_lblNrOfDice.getPos().x + m_lblNrOfDice.getSize().x + 5, m_lblNrOfDice.getPos().y));
+			if (m_btnRemoveDice.isClicked(sf::Mouse::getPosition(*window)))
+			{
+				m_nrOfDice--;
+				if (m_nrOfDice == 0)
+				{
+					m_nrOfDice = 1;
+				}
+			}
 
-		if (m_btnConfirm.isClicked(sf::Mouse::getPosition(*window)))
-		{
-			battle(m_selected, m_target, m_nrOfDice);
+			m_lblNrOfDice.setString(std::to_string(m_nrOfDice));
+			m_btnAddDice.setPosition(sf::Vector2f(m_lblNrOfDice.getPos().x + m_lblNrOfDice.getSize().x + 5, m_lblNrOfDice.getPos().y));
+
+			if (m_btnConfirm.isClicked(sf::Mouse::getPosition(*window)))
+			{
+				battle(m_selected, m_target, m_nrOfDice);
+			}
+			if (m_target->GetArmyCount() == 0)
+			{
+				m_occupy = true;
+			}
 		}
 	}
 }
 
 void AttackPhase::render(sf::RenderWindow* window)
 {
-	if (m_selected && m_target)
+	if (m_selected)
 	{
-		m_btnAddDice.render(window);
-		m_btnRemoveDice.render(window);
-		m_btnConfirm.render(window);
-		m_lblNrOfDice.render(window);
 		m_lblSelected.render(window);
-		m_lblTarget.render(window);
+		if (m_target)
+		{
+			m_btnAddDice.render(window);
+			m_btnRemoveDice.render(window);
+			m_btnConfirm.render(window);
+			m_lblNrOfDice.render(window);
+			m_lblTarget.render(window);
+		}
 	}
 }
