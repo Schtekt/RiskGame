@@ -50,3 +50,13 @@ std::string Button::getString() const
 {
 	return text.getString();
 }
+
+sf::Vector2f Button::getPos() const
+{
+	return box.getPosition();
+}
+
+sf::Vector2f Button::getSize() const
+{
+	return box.getSize();
+}

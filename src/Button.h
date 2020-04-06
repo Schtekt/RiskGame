@@ -22,6 +22,9 @@ public:
 	void setFont(sf::Font *font);
 
 	std::string getString() const;
+
+	sf::Vector2f getPos() const;
+	sf::Vector2f getSize() const;
 };
 
 #endif
