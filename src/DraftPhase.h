@@ -2,12 +2,6 @@
 #define DRAFTPHASE_H
 #include "Phase.h"
 #include "Button.h"
-struct Deployment
-{
-	unsigned int Count;
-	Territory* territory;
-};
-
 class DraftPhase : public Phase
 {
 private:

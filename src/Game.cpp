@@ -90,7 +90,18 @@ void Game::run(sf::RenderWindow* window)
 						m_selected = tmp;
 						m_selected->GetTroopCountToken()->Shape.setOutlineColor(sf::Color::Color(255, 165, 50));
 						m_selected->GetTroopCountToken()->Shape.setOutlineThickness(10.f);
-						std::cout << tmp->GetName() << std::endl;
+						/* // USED FOR DEBUG
+						unsigned int nr = 0;
+						for (unsigned int i = 0; i < m_territories.size(); i++)
+						{
+							if (m_territories[i] == tmp)
+							{
+								nr = i;
+								break;
+							}
+						}
+						*/
+						std::cout << tmp->GetName() /*<< ": " << nr */<< std::endl;
 					}
 					else
 					{
@@ -103,6 +114,9 @@ void Game::run(sf::RenderWindow* window)
 
 				if (m_btnNextPhase.isClicked(pos))
 				{
+					if(m_selected)
+						m_selected->GetTroopCountToken()->Shape.setOutlineThickness(0.f);
+					m_selected = nullptr;
 					if (!m_phase)
 					{
 						m_phase = new DraftPhase(this, m_players[m_playerTurn], &m_font);
