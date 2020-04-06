@@ -3,7 +3,21 @@
 unsigned int DraftPhase::calcToDeploy()
 {
 	unsigned int res = std::max((unsigned int)3, m_currPlayer->GetNrOfTerritories() / 3);
-
+	for (int i = 0; i < m_game->GetNrOfContinents(); i++)
+	{
+		Continent* cont = m_game->GetContinent(i);
+		bool ownsContinent = true;
+		for (int j = 0; j < cont->Territories.size(); j++)
+		{
+			if (cont->Territories[j]->GetOwner() != m_currPlayer)
+			{
+				ownsContinent = false;
+				break;
+			}
+		}
+		if (ownsContinent)
+			res += cont->BonusScore;
+	}
 	return res;
 }
 

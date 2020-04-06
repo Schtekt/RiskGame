@@ -245,6 +245,9 @@ void AttackPhase::run(sf::RenderWindow* window)
 			m_selected = nullptr;
 			m_target = nullptr;
 		}
+
+		m_lblNrOfDice.setString(std::to_string(m_nrToMove));
+		m_btnAddDice.setPosition(sf::Vector2f(m_lblNrOfDice.getPos().x + m_lblNrOfDice.getSize().x + 5, m_lblNrOfDice.getPos().y));
 	}
 }
 
