@@ -187,13 +187,51 @@ void AttackPhase::run(sf::RenderWindow* window)
 			{
 				battle(m_selected, m_target, m_nrOfDice);
 				m_nrOfDice = std::min((unsigned int)3, m_selected->GetArmyCount() - 1);
+				m_lblNrOfDice.setString(std::to_string(m_nrOfDice));
 			}
 
 			if (m_target->GetArmyCount() == 0)
 			{
 				m_occupy = true;
-				m_nrOfDice = m_selected->GetArmyCount() - 1;
+				m_nrToMove = m_selected->GetArmyCount() - 1;
+				m_target->GetOwner()->RemoveOwnership(m_target);
+				m_target->SetOwner(m_selected->GetOwner());
+				m_target->GetTroopCountToken()->Shape.setFillColor(m_target->GetOwner()->GetColor());
+				m_selected->GetOwner()->AddTerritory(m_target);
 			}
+			else if (m_selected->GetArmyCount() == 1)
+			{
+				m_selected = nullptr;
+				m_target = nullptr;
+			}
+		}
+	}
+	else
+	{
+		if (m_btnAddDice.isClicked(sf::Mouse::getPosition(*window)))
+		{
+			m_nrToMove++;
+			if (m_nrToMove > m_selected->GetArmyCount() - 1)
+			{
+				m_nrToMove = m_selected->GetArmyCount() - 1;
+			}
+		}
+
+		if (m_btnRemoveDice.isClicked(sf::Mouse::getPosition(*window)))
+		{
+			m_nrToMove--;
+			int min = std::min(m_nrOfDice, m_selected->GetArmyCount() - 1);
+			if (m_nrToMove < min)
+				m_nrToMove = min;
+		}
+
+		if (m_btnConfirm.isClicked(sf::Mouse::getPosition(*window)))
+		{
+			m_target->SetArmyCount(m_nrToMove);
+			m_selected->SetArmyCount(m_selected->GetArmyCount() - m_nrToMove);
+			m_occupy = false;
+			m_selected = nullptr;
+			m_target = nullptr;
 		}
 	}
 }

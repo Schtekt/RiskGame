@@ -19,6 +19,7 @@ void Player::RemoveOwnership(Territory* area)
 			m_ownedTerritories.erase(owned);
 			break;
 		}
+		owned++;
 	}
 }
 
