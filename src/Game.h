@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "StateManager.h"
 #include <unordered_map>
+class Phase;
 
 struct Card
 {
@@ -40,6 +41,7 @@ private:
 	sf::Texture m_tex;
 	sf::Sprite m_sprite;
 	sf::Font m_font;
+	Phase* m_phase;
 	void shuffle(std::vector<Territory*>& list);
 public:
 	Game(const sf::Font &font, const char* pathToMap);
@@ -52,6 +54,7 @@ public:
 	
 	void LoadTerritories(const char* path);
 	void PlacePlayersRandom();
+	Territory* GetSelected() const;
 };
 
 #endif

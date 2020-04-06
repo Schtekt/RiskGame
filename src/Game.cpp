@@ -3,6 +3,7 @@
 #include <sstream>
 #include <iostream>
 #include <random>
+#include "DraftPhase.h"
 
 void Game::shuffle(std::vector<Territory*>& list)
 {
@@ -33,6 +34,7 @@ Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selecte
 	AddPlayer("Anton Åsbrink", sf::Color::Yellow);
 	PlacePlayersRandom();
 	//=================================================
+	m_phase = new DraftPhase(this, m_players[3], &m_font);
 }
 
 Game::~Game()
@@ -92,6 +94,7 @@ void Game::run(sf::RenderWindow* window)
 				}
 			}
 	}
+	m_phase->run(window, &event);
 }
 
 void Game::render(sf::RenderWindow* window)
@@ -102,6 +105,7 @@ void Game::render(sf::RenderWindow* window)
 		window->draw(m_troopCounts[i]->Shape);
 		window->draw(m_troopCounts[i]->Txt);
 	}
+	m_phase->render(window);
 }
 
 void Game::AddPlayer(const std::string& name, const sf::Color& color)
@@ -242,6 +246,7 @@ void Game::PlacePlayersRandom()
 		for (int j = i * perPlayer; j < perPlayer * (1 + i); j++)
 		{
 			m_players[i]->AddTerritory(tmp[j]);
+			tmp[j]->SetOwner(m_players[i]);
 			TroopCount* tc = tmp[j]->GetTroopCountToken();
 			tc->Shape.setFillColor(m_players[i]->GetColor());
 			tmp[j]->SetArmyCount(1);
@@ -257,4 +262,9 @@ void Game::PlacePlayersRandom()
 			tmp[i]->SetArmyCount(1);
 		}
 	}
+}
+
+Territory* Game::GetSelected() const
+{
+	return m_selected;
 }

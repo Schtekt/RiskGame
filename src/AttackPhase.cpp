@@ -1,6 +1,6 @@
 #include "AttackPhase.h"
 
-AttackPhase::AttackPhase(Game* game, Player* player): Phase(game, player)
+AttackPhase::AttackPhase(Game* game, Player* player, sf::Font* font): Phase(game, player, font)
 {
 }
 

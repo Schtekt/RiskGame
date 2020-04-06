@@ -1,5 +1,5 @@
 #include "Phase.h"
 
-Phase::Phase(Game* game, Player* player): m_game(game), m_currPlayer(player)
+Phase::Phase(Game* game, Player* player, sf::Font* font): m_game(game), m_currPlayer(player), m_font(font)
 {
 }

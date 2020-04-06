@@ -1,6 +1,6 @@
 #include "FortifyPhase.h"
 
-FortifyPhase::FortifyPhase(Game* game, Player* player): Phase(game, player)
+FortifyPhase::FortifyPhase(Game* game, Player* player, sf::Font* font): Phase(game, player, font)
 {
 }
 
