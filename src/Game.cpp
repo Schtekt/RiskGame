@@ -299,6 +299,7 @@ void Game::PlacePlayersRandom()
 		for (unsigned int i = perPlayer * m_players.size(); i < m_territories.size(); i++)
 		{
 			m_players[j]->AddTerritory(tmp[i]);
+			tmp[i]->SetOwner(m_players[j]);
 			tmp[i]->GetTroopCountToken()->Shape.setFillColor(m_players[j++]->GetColor());
 			tmp[i]->SetArmyCount(1);
 		}

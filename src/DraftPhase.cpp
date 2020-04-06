@@ -59,11 +59,12 @@ void DraftPhase::run(sf::RenderWindow* window)
 
 	}
 
-	if (m_game->GetSelected())
+	Territory* tmp = m_game->GetSelected();
+	if (tmp)
 	{
-		if (m_game->GetSelected()->GetOwner() == m_currPlayer)
+		if (tmp->GetOwner() == m_currPlayer)
 		{
-			m_selectedTerritory = m_game->GetSelected();
+			m_selectedTerritory = tmp;
 			m_lblShowDeploy.setString(std::to_string(m_toDeploy));
 			m_btnAddToDeploy.setPosition(sf::Vector2f(m_lblShowDeploy.getPos().x + m_lblShowDeploy.getSize().x + 5, m_lblShowDeploy.getPos().y));
 		}
