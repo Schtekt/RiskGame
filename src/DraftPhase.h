@@ -11,8 +11,8 @@ struct Deployment
 class DraftPhase : public Phase
 {
 private:
-	unsigned int toDeploy;
-	std::vector<Deployment> dep;
+	unsigned int m_toDeploy;
+	std::vector<Deployment> m_deployed;
 public:
 	DraftPhase(Game* game, Player* player);
 	void run(sf::RenderWindow* window, sf::Event event);
