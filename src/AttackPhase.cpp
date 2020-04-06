@@ -1,6 +1,69 @@
 #include "AttackPhase.h"
 
-AttackPhase::AttackPhase(Game* game, Player* player, sf::Font* font): Phase(game, player, font), m_selected(nullptr), m_target(nullptr),nrOfDice(3)
+void AttackPhase::battle(Territory* attacker, Territory* defender, unsigned int nrOfAttackDice)
+{
+	nrOfAttackDice = std::min(attacker->GetArmyCount(), nrOfAttackDice);
+	unsigned int nrOfDefDice = 2;
+	if (defender->GetArmyCount() <= 2)
+		nrOfDefDice = 1;
+
+	int* attackDice = new int[nrOfAttackDice];
+	int* defDice = new int[nrOfDefDice];
+
+	for (int i = 0; i < nrOfAttackDice; i++)
+	{
+		attackDice[i] = rand() % 6 + 1;
+	}
+
+	for (int i = 0; i < nrOfDefDice; i++)
+	{
+		defDice[i] = rand() % 6 + 1;
+	}
+
+	// sort the dice! through bubblesort...
+	for (int i = 0; i < nrOfAttackDice - 1; i++)
+	{
+		for (int j = i; j < nrOfAttackDice; j++)
+		{
+			if (attackDice[i] < attackDice[j])
+			{
+				int tmp = attackDice[i];
+				attackDice[i] = attackDice[j];
+				attackDice[j] = tmp;
+			}
+		}
+	}
+
+	for (int i = 0; i < nrOfDefDice - 1; i++)
+	{
+		for (int j = i; j < nrOfDefDice; j++)
+		{
+			if (defDice[i] < defDice[j])
+			{
+				int tmp = defDice[i];
+				defDice[i] = defDice[j];
+				defDice[j] = tmp;
+			}
+		}
+	}
+
+	// result!
+	for (int i = 0; i < std::min(nrOfDefDice, nrOfAttackDice); i++)
+	{
+		if (attackDice[i] > defDice[i])
+		{
+			defender->SetArmyCount(defender->GetArmyCount() - 1);
+		}
+		else
+		{
+			attacker->SetArmyCount(attacker->GetArmyCount() - 1);
+		}
+	}
+	delete[] attackDice;
+	delete[] defDice;
+}
+
+AttackPhase::AttackPhase(Game* game, Player* player, sf::Font* font): Phase(game, player, font), m_selected(nullptr), m_target(nullptr),m_nrOfDice(3)
 {
 	m_btnAddDice.setFont(font);
 	m_btnRemoveDice.setFont(font);
@@ -42,8 +105,8 @@ void AttackPhase::run(sf::RenderWindow* window)
 				if (m_game->GetSelected() == m_selected->GetNeighbour(i))
 				{
 					m_target = m_game->GetSelected();
-					nrOfDice = std::min((unsigned int)3, m_selected->GetArmyCount() - 1);
-					if (nrOfDice == 0)
+					m_nrOfDice = std::min((unsigned int)3, m_selected->GetArmyCount() - 1);
+					if (m_nrOfDice == 0)
 					{
 						m_selected = nullptr;
 						m_target = nullptr;
@@ -79,28 +142,33 @@ void AttackPhase::run(sf::RenderWindow* window)
 	{
 		if (m_btnAddDice.isClicked(sf::Mouse::getPosition(*window)))
 		{
-			nrOfDice++;
-			if (nrOfDice > m_selected->GetArmyCount() - 1)
+			m_nrOfDice++;
+			if (m_nrOfDice > m_selected->GetArmyCount() - 1)
 			{
-				nrOfDice = m_selected->GetArmyCount() - 1;
+				m_nrOfDice = m_selected->GetArmyCount() - 1;
 			}
-			else if (nrOfDice > 3)
+			else if (m_nrOfDice > 3)
 			{
-				nrOfDice = 3;
+				m_nrOfDice = 3;
 			}
 		}
 
 		if (m_btnRemoveDice.isClicked(sf::Mouse::getPosition(*window)))
 		{
-			nrOfDice--;
-			if (nrOfDice == 0)
+			m_nrOfDice--;
+			if (m_nrOfDice == 0)
 			{
-				nrOfDice = 1;
+				m_nrOfDice = 1;
 			}
 		}
 
-		m_lblNrOfDice.setString(std::to_string(nrOfDice));
+		m_lblNrOfDice.setString(std::to_string(m_nrOfDice));
 		m_btnAddDice.setPosition(sf::Vector2f(m_lblNrOfDice.getPos().x + m_lblNrOfDice.getSize().x + 5, m_lblNrOfDice.getPos().y));
+
+		if (m_btnConfirm.isClicked(sf::Mouse::getPosition(*window)))
+		{
+			battle(m_selected, m_target, m_nrOfDice);
+		}
 	}
 }
 

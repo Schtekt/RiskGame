@@ -6,7 +6,7 @@ class AttackPhase : public Phase
 private:
 	Territory* m_selected;
 	Territory* m_target;
-	unsigned int nrOfDice;
+	unsigned int m_nrOfDice;
 
 	Button m_lblNrOfDice;
 	Button m_btnAddDice;
@@ -15,6 +15,7 @@ private:
 
 	Button m_lblSelected;
 	Button m_lblTarget;
+	void battle(Territory* attacker, Territory* defender, unsigned int nrOfAttackDice);
 public:
 	AttackPhase(Game* game, Player* player, sf::Font* font);
 	void run(sf::RenderWindow* window);
