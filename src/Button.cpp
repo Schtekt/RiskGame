@@ -46,6 +46,11 @@ void Button::setFont(sf::Font *font)
 	text.setFont(*font);
 }
 
+void Button::setColor(sf::Color color)
+{
+	box.setFillColor(color);
+}
+
 std::string Button::getString() const
 {
 	return text.getString();

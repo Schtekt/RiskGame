@@ -18,8 +18,8 @@ public:
 
 	void setPosition(sf::Vector2f pos);
 	void setString(std::string string);
-
 	void setFont(sf::Font *font);
+	void setColor(sf::Color color);
 
 	std::string getString() const;
 
