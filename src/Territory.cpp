@@ -50,3 +50,8 @@ Territory* Territory::GetNeighbour(int index) const
 	return m_neighbours[index];
 }
 
+Player* Territory::GetOwner() const
+{
+	return m_owner;
+}
+

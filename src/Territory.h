@@ -27,6 +27,7 @@ public:
 	unsigned int GetArmyCount() const;
 	unsigned int NrOfNeighbours() const;
 	Territory* GetNeighbour(int index) const;
+	Player* GetOwner() const;
 };
 
 struct TroopCount
