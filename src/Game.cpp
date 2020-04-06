@@ -92,9 +92,11 @@ void Game::run(sf::RenderWindow* window)
 						m_selected = nullptr;
 					}
 				}
+
+
+				m_phase->run(window);
 			}
 	}
-	m_phase->run(window, &event);
 }
 
 void Game::render(sf::RenderWindow* window)

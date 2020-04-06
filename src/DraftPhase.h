@@ -11,18 +11,19 @@ struct Deployment
 class DraftPhase : public Phase
 {
 private:
+	unsigned int m_maxToDeploy;
 	unsigned int m_toDeploy;
-	std::vector<Deployment> m_deployed;
 
 	Button m_lblShowDeploy;
 	Button m_btnAddToDeploy;
 	Button m_btnRemoveToDeploy;
 	Button m_lblTotalToDeploy;
+	Button m_btnConfirm;
 
 	Territory* m_selectedTerritory;
 public:
 	DraftPhase(Game* game, Player* player, sf::Font* font);
-	void run(sf::RenderWindow* window, sf::Event* event);
+	void run(sf::RenderWindow* window);
 	void render(sf::RenderWindow* window);
 };
 

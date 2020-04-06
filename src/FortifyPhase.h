@@ -7,7 +7,7 @@ private:
 	
 public:
 	FortifyPhase(Game* game, Player* player, sf::Font* font);
-	void run(sf::RenderWindow* window, sf::Event event);
+	void run(sf::RenderWindow* window);
 	void render(sf::RenderWindow* window);
 };
 #endif

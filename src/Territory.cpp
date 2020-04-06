@@ -1,6 +1,6 @@
 #include "Territory.h"
 #include "Player.h"
-Territory::Territory(const std::string& name): m_owner(nullptr)
+Territory::Territory(const std::string& name): m_owner(nullptr), m_troopCountToken(nullptr)
 {
 	m_name = name;
 	m_armyCount = 0;
@@ -13,6 +13,8 @@ void Territory::AddNeighbour(Territory* area)
 void Territory::SetArmyCount(unsigned int count)
 {
 	m_armyCount = count;
+	if(m_troopCountToken)
+		m_troopCountToken->Txt.setString(std::to_string(m_armyCount));
 }
 
 void Territory::AddTroopCountToken(TroopCount* tc)

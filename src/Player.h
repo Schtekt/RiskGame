@@ -17,6 +17,7 @@ public:
 	std::string GetName() const;
 	sf::Color GetColor() const;
 	unsigned int GetNrOfTerritories() const;
+	Territory* GetTerritory(unsigned int index) const;
 };
 
 #endif

@@ -9,7 +9,7 @@ protected:
 	sf::Font* m_font;
 public:
 	Phase(Game* game, Player* player, sf::Font* font);
-	virtual void run(sf::RenderWindow* window, sf::Event* event) = 0;
+	virtual void run(sf::RenderWindow* window) = 0;
 	virtual void render(sf::RenderWindow* window) = 0;
 };
 #endif

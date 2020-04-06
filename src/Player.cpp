@@ -36,3 +36,8 @@ unsigned int Player::GetNrOfTerritories() const
 {
 	return m_ownedTerritories.size();
 }
+
+Territory* Player::GetTerritory(unsigned int index) const
+{
+	return m_ownedTerritories[index];
+}

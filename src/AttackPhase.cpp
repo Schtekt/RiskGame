@@ -4,7 +4,7 @@ AttackPhase::AttackPhase(Game* game, Player* player, sf::Font* font): Phase(game
 {
 }
 
-void AttackPhase::run(sf::RenderWindow* window, sf::Event event)
+void AttackPhase::run(sf::RenderWindow* window)
 {
 }
 
