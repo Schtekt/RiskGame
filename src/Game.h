@@ -23,7 +23,7 @@ struct Continent
 public:
 	std::string Name;
 	std::vector<Territory*> Territories;
-	unsigned int BonusScore;
+	unsigned int BonusScore = 0;
 };
 
 class Game : public State

@@ -7,9 +7,9 @@
 
 void Game::shuffle(std::vector<Territory*>& list)
 {
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	unsigned int sizeOfList = list.size();
-	for (int i = 0; i < sizeOfList; i++)
+	for (unsigned int i = 0; i < sizeOfList; i++)
 	{
 		int newPos = rand() % sizeOfList;
 		Territory* tmp = list[i];
@@ -71,7 +71,7 @@ void Game::run(sf::RenderWindow* window)
 			{
 				sf::Vector2i pos = sf::Mouse::getPosition(*window);
 
-				if (m_redScaleData.getSize().x >= pos.x && m_redScaleData.getSize().y >= pos.y)
+				if (m_redScaleData.getSize().x >= (unsigned int)pos.x && m_redScaleData.getSize().y >= (unsigned int)pos.y)
 				{
 					sf::Color col = m_redScaleData.getPixel(pos.x, pos.y);
 					if (m_selected)
@@ -100,7 +100,7 @@ void Game::run(sf::RenderWindow* window)
 void Game::render(sf::RenderWindow* window)
 {
 	window->draw(m_sprite);
-	for (int i = 0; i < m_troopCounts.size(); i++)
+	for (unsigned int i = 0; i < m_troopCounts.size(); i++)
 	{
 		window->draw(m_troopCounts[i]->Shape);
 		window->draw(m_troopCounts[i]->Txt);
@@ -222,9 +222,9 @@ void Game::LoadTerritories(const char* path)
 
 				TroopCount* tc = new TroopCount(m_font);
 				tc->Territory = m_territories[territory];
-				tc->Shape.setPosition(x, y);
+				tc->Shape.setPosition((float)x, (float)y);
 				tc->Shape.setFillColor(sf::Color::White);
-				tc->Txt.setPosition(x + 5, y);
+				tc->Txt.setPosition((float)x + 5.f, (float)y);
 				tc->Territory->SetArmyCount(1);
 				tc->Txt.setString(std::to_string(tc->Territory->GetArmyCount()));
 				m_troopCounts.push_back(tc);
@@ -241,9 +241,9 @@ void Game::PlacePlayersRandom()
 	std::vector<Territory*> tmp = m_territories;
 	shuffle(tmp);
 	unsigned int perPlayer = m_territories.size() / m_players.size();
-	for (int i = 0; i < m_players.size(); i++)
+	for (unsigned int i = 0; i < m_players.size(); i++)
 	{
-		for (int j = i * perPlayer; j < perPlayer * (1 + i); j++)
+		for (unsigned int j = i * perPlayer; j < perPlayer * (1 + i); j++)
 		{
 			m_players[i]->AddTerritory(tmp[j]);
 			tmp[j]->SetOwner(m_players[i]);
@@ -255,7 +255,7 @@ void Game::PlacePlayersRandom()
 	if (perPlayer * m_players.size() < m_territories.size())
 	{
 		int j = 0;
-		for (int i = perPlayer * m_players.size(); i < m_territories.size(); i++)
+		for (unsigned int i = perPlayer * m_players.size(); i < m_territories.size(); i++)
 		{
 			m_players[j]->AddTerritory(tmp[i]);
 			tmp[i]->GetTroopCountToken()->Shape.setFillColor(m_players[j++]->GetColor());

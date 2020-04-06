@@ -33,7 +33,7 @@ public:
 struct TroopCount
 {
 public:
-	TroopCount(const sf::Font& font, unsigned int shapeSize = 10) : Shape(shapeSize), Territory(nullptr)
+	TroopCount(const sf::Font& font, unsigned int shapeSize = 10) : Shape((float)shapeSize), Territory(nullptr)
 	{
 		Txt.setFont(font);
 		Txt.setFillColor(sf::Color::Black);
