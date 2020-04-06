@@ -5,7 +5,7 @@
 #include <SFML/Graphics.hpp>
 
 struct TroopCount;
-
+class Player;
 class Territory
 {
 private:
@@ -13,12 +13,14 @@ private:
 	unsigned int m_armyCount;
 	std::vector<Territory*> m_neighbours;
 	TroopCount* m_troopCountToken;
+	Player* m_owner;
 public:
 	Territory(const std::string& name);
 	
 	void AddNeighbour(Territory* area);
 	void SetArmyCount(unsigned int count);
 	void AddTroopCountToken(TroopCount* tc);
+	void SetOwner(Player* player);
 	TroopCount* GetTroopCountToken();
 
 	std::string GetName() const;

@@ -1,6 +1,6 @@
 #include "Territory.h"
-
-Territory::Territory(const std::string& name)
+#include "Player.h"
+Territory::Territory(const std::string& name): m_owner(nullptr)
 {
 	m_name = name;
 	m_armyCount = 0;
@@ -18,6 +18,11 @@ void Territory::SetArmyCount(unsigned int count)
 void Territory::AddTroopCountToken(TroopCount* tc)
 {
 	m_troopCountToken = tc;
+}
+
+void Territory::SetOwner(Player* player)
+{
+	m_owner = player;
 }
 
 TroopCount* Territory::GetTroopCountToken()
