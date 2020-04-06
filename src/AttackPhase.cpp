@@ -78,7 +78,7 @@ void AttackPhase::battle(Territory* attacker, Territory* defender, unsigned int 
 	delete[] defDice;
 }
 
-AttackPhase::AttackPhase(Game* game, Player* player, sf::Font* font): Phase(game, player, font), m_selected(nullptr), m_target(nullptr),m_nrOfDice(3), m_occupy(false)
+AttackPhase::AttackPhase(Game* game, Player* player, sf::Font* font): Phase(game, player, font), m_selected(nullptr), m_target(nullptr),m_nrOfDice(3), m_occupy(false), m_nrToMove(3)
 {
 	m_btnAddDice.setFont(font);
 	m_btnRemoveDice.setFont(font);
@@ -102,6 +102,18 @@ AttackPhase::AttackPhase(Game* game, Player* player, sf::Font* font): Phase(game
 	m_lblSelected.setPosition(sf::Vector2f(m_btnConfirm.getPos().x, m_btnConfirm.getPos().y + m_btnConfirm.getSize().y + 5));
 	m_lblTarget.setPosition(sf::Vector2f(m_lblSelected.getPos().x, m_lblSelected.getPos().y + m_lblSelected.getSize().y + 5));
 
+}
+
+AttackPhase::~AttackPhase()
+{
+	if (m_occupy)
+	{
+		m_target->SetArmyCount(m_nrToMove);
+		m_selected->SetArmyCount(m_selected->GetArmyCount() - m_nrToMove);
+		m_occupy = false;
+		m_selected = nullptr;
+		m_target = nullptr;
+	}
 }
 
 void AttackPhase::run(sf::RenderWindow* window)

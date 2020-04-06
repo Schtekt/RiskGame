@@ -4,6 +4,10 @@ FortifyPhase::FortifyPhase(Game* game, Player* player, sf::Font* font): Phase(ga
 {
 }
 
+FortifyPhase::~FortifyPhase()
+{
+}
+
 void FortifyPhase::run(sf::RenderWindow* window)
 {
 }

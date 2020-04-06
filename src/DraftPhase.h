@@ -17,6 +17,7 @@ private:
 	Territory* m_selectedTerritory;
 public:
 	DraftPhase(Game* game, Player* player, sf::Font* font);
+	~DraftPhase();
 	void run(sf::RenderWindow* window);
 	void render(sf::RenderWindow* window);
 };

@@ -20,6 +20,7 @@ private:
 	void battle(Territory* attacker, Territory* defender, unsigned int nrOfAttackDice);
 public:
 	AttackPhase(Game* game, Player* player, sf::Font* font);
+	~AttackPhase();
 	void run(sf::RenderWindow* window);
 	void render(sf::RenderWindow* window);
 };

@@ -24,6 +24,10 @@ DraftPhase::DraftPhase(Game* game, Player* player, sf::Font* font): Phase(game, 
 	m_btnConfirm.setPosition(sf::Vector2f(m_btnRemoveToDeploy.getPos().x, m_btnRemoveToDeploy.getPos().y + m_btnRemoveToDeploy.getSize().y + 5));
 }
 
+DraftPhase::~DraftPhase()
+{
+}
+
 void DraftPhase::run(sf::RenderWindow* window)
 {
 	if (m_selectedTerritory)
