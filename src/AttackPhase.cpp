@@ -135,6 +135,7 @@ void AttackPhase::run(sf::RenderWindow* window)
 			else if (m_game->GetSelected()->GetOwner() == m_currPlayer)
 			{
 				m_selected = m_game->GetSelected();
+				m_target = nullptr;
 			}
 		}
 		else
@@ -185,10 +186,13 @@ void AttackPhase::run(sf::RenderWindow* window)
 			if (m_btnConfirm.isClicked(sf::Mouse::getPosition(*window)))
 			{
 				battle(m_selected, m_target, m_nrOfDice);
+				m_nrOfDice = std::min((unsigned int)3, m_selected->GetArmyCount() - 1);
 			}
+
 			if (m_target->GetArmyCount() == 0)
 			{
 				m_occupy = true;
+				m_nrOfDice = m_selected->GetArmyCount() - 1;
 			}
 		}
 	}
