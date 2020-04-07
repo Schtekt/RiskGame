@@ -198,18 +198,18 @@ void AttackPhase::run(sf::RenderWindow* window)
 			if (m_btnConfirm.isClicked(sf::Mouse::getPosition(*window)))
 			{
 				battle(m_selected, m_target, m_nrOfDice);
-				m_nrOfDice = std::min((unsigned int)3, m_selected->GetArmyCount() - 1);
 				m_lblNrOfDice.setString(std::to_string(m_nrOfDice));
 			}
 
 			if (m_target->GetArmyCount() == 0)
 			{
 				m_occupy = true;
-				m_nrToMove = m_selected->GetArmyCount() - 1;
 				m_target->GetOwner()->RemoveOwnership(m_target);
 				m_target->SetOwner(m_selected->GetOwner());
 				m_target->GetTroopCountToken()->Shape.setFillColor(m_target->GetOwner()->GetColor());
 				m_selected->GetOwner()->AddTerritory(m_target);
+				m_nrToMove = m_selected->GetArmyCount() - 1;
+				m_lblNrOfDice.setString(std::to_string(m_nrToMove));
 			}
 			else if (m_selected->GetArmyCount() == 1)
 			{
