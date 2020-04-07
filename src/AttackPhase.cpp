@@ -78,7 +78,8 @@ void AttackPhase::battle(Territory* attacker, Territory* defender, unsigned int 
 	delete[] defDice;
 }
 
-AttackPhase::AttackPhase(Game* game, Player* player, sf::Font* font): Phase(game, player, font), m_selected(nullptr), m_target(nullptr),m_nrOfDice(3), m_occupy(false), m_nrToMove(3)
+AttackPhase::AttackPhase(Game* game, Player* player, sf::Font* font): Phase(game, player, font), m_selected(nullptr), m_target(nullptr),
+m_nrOfDice(3), m_occupy(false), m_nrToMove(3), m_wonOnce(false)
 {
 	m_btnAddDice.setFont(font);
 	m_btnRemoveDice.setFont(font);
@@ -113,6 +114,11 @@ AttackPhase::~AttackPhase()
 		m_occupy = false;
 		m_selected = nullptr;
 		m_target = nullptr;
+	}
+
+	if (m_wonOnce)
+	{
+		m_game->GiveRandomCard(m_currPlayer);
 	}
 }
 
@@ -198,12 +204,14 @@ void AttackPhase::run(sf::RenderWindow* window)
 			if (m_btnConfirm.isClicked(sf::Mouse::getPosition(*window)))
 			{
 				battle(m_selected, m_target, m_nrOfDice);
+				m_nrOfDice = std::min(m_nrOfDice, m_selected->GetArmyCount() - 1);
 				m_lblNrOfDice.setString(std::to_string(m_nrOfDice));
 			}
 
 			if (m_target->GetArmyCount() == 0)
 			{
 				m_occupy = true;
+				m_wonOnce = true;
 				m_target->GetOwner()->RemoveOwnership(m_target);
 				m_target->SetOwner(m_selected->GetOwner());
 				m_target->GetTroopCountToken()->Shape.setFillColor(m_target->GetOwner()->GetColor());

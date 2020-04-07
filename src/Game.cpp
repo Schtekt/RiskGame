@@ -37,9 +37,13 @@ Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selecte
 		m_sprite.setTexture(m_tex, true);
 	}
 	LoadTerritories(pathToMap);
+
 	m_btnNextPhase.setFont(&m_font);
+	m_btnShowCards.setFont(&m_font);
 	m_btnNextPhase.setPosition(sf::Vector2f(1000, 620));
+	m_btnShowCards.setPosition(sf::Vector2f(1300, 620));
 	m_btnNextPhase.setString("Start Game");
+	m_btnShowCards.setString("Show your cards");
 
 	//=============TESTING=============================
 	AddPlayer("Jacob Andersson", sf::Color::Red);
@@ -63,9 +67,14 @@ Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selecte
 
 Game::~Game()
 {
-	for (unsigned int i = 0; i < m_cards.size(); i++)
+	for (unsigned int i = 0; i < m_freeCards.size(); i++)
 	{
-		delete m_cards[i];
+		delete m_freeCards[i];
+	}
+
+	for (unsigned int i = 0; i < m_busyCards.size(); i++)
+	{
+		delete m_busyCards[i];
 	}
 
 	for (unsigned int i = 0; i < m_continents.size(); i++)
@@ -217,6 +226,30 @@ void Game::run(sf::RenderWindow* window)
 						}
 					}
 				}
+				if (m_btnShowCards.isClicked(pos))
+				{
+					for (int i = 0; i < m_players[m_playerTurn]->GetNrOfOwnedCards(); i++)
+					{
+						Card* tmp = m_players[m_playerTurn]->GetCard(i);
+						std::cout << "Card " << i << ": ";
+						switch (tmp->type)
+						{
+						case Card::ArmyType::Infantry:
+								std::cout << tmp->territory->GetName() << ", Infantry";
+								break;
+						case Card::ArmyType::Cavalry:
+							std::cout << tmp->territory->GetName() << ", Cavalry";
+							break;
+						case Card::ArmyType::Artillery:
+							std::cout << tmp->territory->GetName() << ", Artillery";
+							break;
+						case Card::ArmyType::Joker:
+							std::cout << "Joker";
+							break;
+						}
+						std::cout << std::endl;
+					}
+				}
 			}
 	}
 }
@@ -236,6 +269,7 @@ void Game::render(sf::RenderWindow* window)
 	}
 
 	m_btnNextPhase.render(window);
+	m_btnShowCards.render(window);
 	if(m_phase)
 		m_phase->render(window);
 }
@@ -332,7 +366,7 @@ void Game::LoadTerritories(const char* path)
 				default:
 					break;
 				}
-				m_cards.push_back(c);
+				m_freeCards.push_back(c);
 			}
 			else if (line[0] == 'm')
 			{
@@ -410,4 +444,12 @@ Continent* Game::GetContinent(unsigned int index) const
 unsigned int Game::GetNrOfContinents() const
 {
 	return m_continents.size();
+}
+
+void Game::GiveRandomCard(Player* player)
+{
+	unsigned int cardIndex = rand() % m_freeCards.size();
+	player->AddCard(m_freeCards[cardIndex]);
+	m_busyCards.push_back(m_freeCards[cardIndex]);
+	m_freeCards.erase(m_freeCards.begin() + cardIndex);
 }

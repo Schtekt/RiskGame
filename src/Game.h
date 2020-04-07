@@ -6,19 +6,6 @@
 #include "Button.h"
 class Phase;
 
-struct Card
-{
-	enum class ArmyType
-	{
-		Infantry,
-		Cavalry,
-		Artillery,
-		Joker
-	};
-	Territory* territory;
-	ArmyType type;
-};
-
 struct Continent
 {
 public:
@@ -33,7 +20,8 @@ private:
 	std::vector<Player*> m_players;
 	std::vector<Territory*> m_territories;
 	std::vector<Continent*> m_continents;
-	std::vector<Card*> m_cards;
+	std::vector<Card*> m_freeCards;
+	std::vector<Card*> m_busyCards;
 	std::map<unsigned int, Territory*> m_territoryMapping;
 	std::vector<TroopCount*> m_troopCounts;
 
@@ -45,6 +33,7 @@ private:
 	Phase* m_phase;
 	Button m_btnNextPhase;
 	std::vector<Button*> m_playerButtons;
+	Button m_btnShowCards;
 	unsigned int m_playerTurn;
 	bool m_firstDraft;
 
@@ -64,6 +53,7 @@ public:
 	Territory* GetSelected() const;
 	Continent* GetContinent(unsigned int index) const;
 	unsigned int GetNrOfContinents() const;
+	void GiveRandomCard(Player* player);
 };
 
 #endif

@@ -52,3 +52,23 @@ unsigned int Player::GetArmyCount() const
 	}
 	return res;
 }
+
+void Player::AddCard(Card* card)
+{
+	m_ownedCards.push_back(card);
+}
+
+void Player::RemoveCard(unsigned int index)
+{
+	m_ownedCards.erase(m_ownedCards.begin() + index);
+}
+
+Card* Player::GetCard(unsigned int index)
+{
+	return m_ownedCards[index];
+}
+
+unsigned int Player::GetNrOfOwnedCards() const
+{
+	return m_ownedCards.size();
+}

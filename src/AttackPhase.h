@@ -9,6 +9,7 @@ private:
 	unsigned int m_nrOfDice;
 	unsigned int m_nrToMove;
 	bool m_occupy;
+	bool m_wonOnce;
 
 	Button m_lblNrOfDice;
 	Button m_btnAddDice;
