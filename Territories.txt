@@ -297,8 +297,9 @@ n 10 26
 n 14 27
 
 // Africa (starts at 16)
-n 18 27
-n 20 27
+n 18 26
+n 20 26
+n 20 28
 n 20 29
 n 20 30
 // Europe (starts at 22)
