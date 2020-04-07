@@ -120,3 +120,9 @@ void DraftPhase::render(sf::RenderWindow* window)
 		m_lblSelected.render(window);
 	}
 }
+
+void DraftPhase::setDeployAmount(unsigned int toDeploy)
+{
+	m_maxToDeploy = toDeploy;
+	m_toDeploy = toDeploy;
+}

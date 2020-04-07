@@ -42,3 +42,13 @@ Territory* Player::GetTerritory(unsigned int index) const
 {
 	return m_ownedTerritories[index];
 }
+
+unsigned int Player::GetArmyCount() const
+{
+	unsigned int res = 0;
+	for (int i = 0; i < m_ownedTerritories.size(); i++)
+	{
+		res += m_ownedTerritories[i]->GetArmyCount();
+	}
+	return res;
+}

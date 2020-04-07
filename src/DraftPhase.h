@@ -22,6 +22,7 @@ public:
 	~DraftPhase();
 	void run(sf::RenderWindow* window);
 	void render(sf::RenderWindow* window);
+	void setDeployAmount(unsigned int toDeploy);
 };
 
 #endif

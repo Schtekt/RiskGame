@@ -18,6 +18,7 @@ public:
 	sf::Color GetColor() const;
 	unsigned int GetNrOfTerritories() const;
 	Territory* GetTerritory(unsigned int index) const;
+	unsigned int GetArmyCount() const;
 };
 
 #endif

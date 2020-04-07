@@ -46,6 +46,8 @@ private:
 	Button m_btnNextPhase;
 	std::vector<Button*> m_playerButtons;
 	unsigned int m_playerTurn;
+	bool m_firstDraft;
+
 	void shuffle(std::vector<Territory*>& list);
 	void highlightPlayer(int index);
 public:

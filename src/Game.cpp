@@ -30,8 +30,7 @@ void Game::highlightPlayer(int index)
 	m_playerButtons[index]->setOutline(5, sf::Color::Color(255 - col->r, 255 - col->g, 255 - col->b));
 }
 
-
-Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selected(nullptr), m_playerTurn(0)
+Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selected(nullptr), m_playerTurn(0), m_firstDraft(true)
 {
 	if (m_tex.loadFromFile("../assets/map.png") && m_redScaleData.loadFromFile("../assets/mapRedScale.png"))
 	{
@@ -40,7 +39,7 @@ Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selecte
 	LoadTerritories(pathToMap);
 	m_btnNextPhase.setFont(&m_font);
 	m_btnNextPhase.setPosition(sf::Vector2f(1000, 620));
-	m_btnNextPhase.setString("Start turn");
+	m_btnNextPhase.setString("Start Game");
 
 	//=============TESTING=============================
 	AddPlayer("Jacob Andersson", sf::Color::Red);
@@ -59,7 +58,6 @@ Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selecte
 		btn->setPosition(sf::Vector2f(1300, (btn->getSize().y + 10) * i));
 		m_playerButtons.push_back(btn);
 	}
-	highlightPlayer(0);
 	m_phase = nullptr;
 }
 
@@ -143,34 +141,80 @@ void Game::run(sf::RenderWindow* window)
 					if(m_selected)
 						m_selected->GetTroopCountToken()->Shape.setOutlineThickness(0.f);
 					m_selected = nullptr;
-					if (!m_phase)
+					if (m_firstDraft)
 					{
-						m_phase = new DraftPhase(this, m_players[m_playerTurn], &m_font);
-						m_btnNextPhase.setString("Go to Attack phase");
-					}
-					else if (dynamic_cast<DraftPhase*>(m_phase))
-					{
-						delete m_phase;
-						m_phase = new AttackPhase(this, m_players[m_playerTurn], &m_font);
-						m_btnNextPhase.setString("Go to Fortify phase");
-					}
-					else if (dynamic_cast<AttackPhase*>(m_phase))
-					{
-						delete m_phase;
-						m_phase = new FortifyPhase(this, m_players[m_playerTurn], &m_font);
-						m_btnNextPhase.setString("End turn");
-					}
-					else if (dynamic_cast<FortifyPhase*>(m_phase))
-					{
-						delete m_phase;
-						m_playerTurn++;
-						if (m_playerTurn >= m_players.size())
+						if (!m_phase)
 						{
-							m_playerTurn = 0;
+							m_playerTurn = m_territories.size() % m_players.size();
+							m_phase = new DraftPhase(this, m_players[m_playerTurn], &m_font);
+							((DraftPhase*)m_phase)->setDeployAmount(1);
+							highlightPlayer(m_playerTurn);
+							m_btnNextPhase.setString("End Draft");
 						}
-						m_phase = nullptr;
-						m_btnNextPhase.setString("Start turn");
-						highlightPlayer(m_playerTurn);
+						else
+						{
+							if (m_players.size() > m_playerTurn)
+							{
+								delete m_phase;
+
+								if (m_playerTurn == m_players.size() - 1)
+									m_playerTurn = 0;
+								else
+									m_playerTurn++;
+
+								m_phase = new DraftPhase(this, m_players[m_playerTurn], &m_font);
+								((DraftPhase*)m_phase)->setDeployAmount(1);
+								highlightPlayer(m_playerTurn);
+								m_btnNextPhase.setString("End Draft");
+								bool done = true;
+								unsigned int limit = 50 - m_players.size() * 5;
+								for (int i = 0; i < m_players.size(); i++)
+								{
+									if (m_players[i]->GetArmyCount() < limit)
+										done = false;
+								}
+
+								if (done)
+								{
+									m_firstDraft = false;
+									m_btnNextPhase.setString("Start turn");
+									delete m_phase;
+									m_phase = nullptr;
+								}
+							}
+						}
+					}
+					else
+					{
+						if (!m_phase)
+						{
+							m_phase = new DraftPhase(this, m_players[m_playerTurn], &m_font);
+							m_btnNextPhase.setString("Go to Attack phase");
+						}
+						else if (dynamic_cast<DraftPhase*>(m_phase))
+						{
+							delete m_phase;
+							m_phase = new AttackPhase(this, m_players[m_playerTurn], &m_font);
+							m_btnNextPhase.setString("Go to Fortify phase");
+						}
+						else if (dynamic_cast<AttackPhase*>(m_phase))
+						{
+							delete m_phase;
+							m_phase = new FortifyPhase(this, m_players[m_playerTurn], &m_font);
+							m_btnNextPhase.setString("End turn");
+						}
+						else if (dynamic_cast<FortifyPhase*>(m_phase))
+						{
+							delete m_phase;
+							m_playerTurn++;
+							if (m_playerTurn >= m_players.size())
+							{
+								m_playerTurn = 0;
+							}
+							m_phase = nullptr;
+							m_btnNextPhase.setString("Start turn");
+							highlightPlayer(m_playerTurn);
+						}
 					}
 				}
 			}
