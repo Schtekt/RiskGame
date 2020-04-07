@@ -2,18 +2,7 @@
 #define PLAYER_H
 #include "Territory.h"
 
-struct Card
-{
-	enum class ArmyType
-	{
-		Infantry,
-		Cavalry,
-		Artillery,
-		Joker
-	};
-	Territory* territory;
-	ArmyType type;
-};
+struct Card;
 
 class Player
 {

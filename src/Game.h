@@ -5,6 +5,26 @@
 #include <unordered_map>
 #include "Button.h"
 class Phase;
+struct Card
+{
+	enum class ArmyType
+	{
+		Infantry,
+		Cavalry,
+		Artillery,
+		Joker
+	};
+	Territory* territory;
+	ArmyType type;
+
+	sf::Text txt;
+	sf::Texture* tex;
+	sf::Sprite texSprite;
+	sf::RectangleShape rect;
+
+	void render(sf::RenderWindow* window);
+	void setPos(sf::Vector2f pos);
+};
 
 struct Continent
 {
@@ -27,13 +47,16 @@ private:
 
 	Territory* m_selected;
 	sf::Image m_redScaleData;
-	sf::Texture m_tex;
-	sf::Sprite m_sprite;
+	sf::Texture m_mapTex;
+	sf::Sprite m_mapSprite;
+	sf::Texture m_artTex;
+	sf::Texture m_cavTex;
+	sf::Texture m_infTex;
+	sf::Texture m_jkrTex;
 	sf::Font m_font;
 	Phase* m_phase;
 	Button m_btnNextPhase;
 	std::vector<Button*> m_playerButtons;
-	Button m_btnShowCards;
 	unsigned int m_playerTurn;
 	bool m_firstDraft;
 

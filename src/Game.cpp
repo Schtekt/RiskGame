@@ -32,18 +32,21 @@ void Game::highlightPlayer(int index)
 
 Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selected(nullptr), m_playerTurn(0), m_firstDraft(true)
 {
-	if (m_tex.loadFromFile("../assets/map.png") && m_redScaleData.loadFromFile("../assets/mapRedScaleV2.png"))
+	if (m_mapTex.loadFromFile("../assets/map.png") && m_redScaleData.loadFromFile("../assets/mapRedScaleV2.png"))
 	{
-		m_sprite.setTexture(m_tex, true);
+		m_mapSprite.setTexture(m_mapTex, true);
 	}
+
+	m_artTex.loadFromFile("../assets/artillery.png");
+	m_cavTex.loadFromFile("../assets/cavalry.png");
+	m_infTex.loadFromFile("../assets/infantry.png");
+	m_jkrTex.loadFromFile("../assets/joker.png");
+
 	LoadTerritories(pathToMap);
 
 	m_btnNextPhase.setFont(&m_font);
-	m_btnShowCards.setFont(&m_font);
 	m_btnNextPhase.setPosition(sf::Vector2f(1000, 620));
-	m_btnShowCards.setPosition(sf::Vector2f(1300, 620));
 	m_btnNextPhase.setString("Start Game");
-	m_btnShowCards.setString("Show your cards");
 
 	//=============TESTING=============================
 	AddPlayer("Jacob Andersson", sf::Color::Red);
@@ -211,6 +214,14 @@ void Game::run(sf::RenderWindow* window)
 							delete m_phase;
 							m_phase = new FortifyPhase(this, m_players[m_playerTurn], &m_font);
 							m_btnNextPhase.setString("End turn");
+
+							for (int i = 0; i < m_players[m_playerTurn]->GetNrOfOwnedCards(); i++)
+							{
+								Card* tmp = m_players[m_playerTurn]->GetCard(i);
+								float xCoord = window->getSize().x;
+								xCoord -= (3 + tmp->rect.getLocalBounds().width)*(i + 1);
+								tmp->setPos(sf::Vector2f(xCoord, 700));
+							}
 						}
 						else if (dynamic_cast<FortifyPhase*>(m_phase))
 						{
@@ -226,37 +237,13 @@ void Game::run(sf::RenderWindow* window)
 						}
 					}
 				}
-				if (m_btnShowCards.isClicked(pos))
-				{
-					for (int i = 0; i < m_players[m_playerTurn]->GetNrOfOwnedCards(); i++)
-					{
-						Card* tmp = m_players[m_playerTurn]->GetCard(i);
-						std::cout << "Card " << i << ": ";
-						switch (tmp->type)
-						{
-						case Card::ArmyType::Infantry:
-								std::cout << tmp->territory->GetName() << ", Infantry";
-								break;
-						case Card::ArmyType::Cavalry:
-							std::cout << tmp->territory->GetName() << ", Cavalry";
-							break;
-						case Card::ArmyType::Artillery:
-							std::cout << tmp->territory->GetName() << ", Artillery";
-							break;
-						case Card::ArmyType::Joker:
-							std::cout << "Joker";
-							break;
-						}
-						std::cout << std::endl;
-					}
-				}
 			}
 	}
 }
 
 void Game::render(sf::RenderWindow* window)
 {
-	window->draw(m_sprite);
+	window->draw(m_mapSprite);
 	for (unsigned int i = 0; i < m_troopCounts.size(); i++)
 	{
 		window->draw(m_troopCounts[i]->Shape);
@@ -269,7 +256,14 @@ void Game::render(sf::RenderWindow* window)
 	}
 
 	m_btnNextPhase.render(window);
-	m_btnShowCards.render(window);
+
+	for (unsigned int i = 0; i < m_players[m_playerTurn]->GetNrOfOwnedCards(); i++)
+	{
+		Card* card = m_players[m_playerTurn]->GetCard(i);
+
+		card->render(window);
+	}
+
 	if(m_phase)
 		m_phase->render(window);
 }
@@ -350,22 +344,41 @@ void Game::LoadTerritories(const char* path)
 				case 'i':
 					c->type = Card::ArmyType::Infantry;
 					c->territory = m_territories[territory];
+					c->tex = &m_infTex;
 					break;
 				case 'c':
 					c->type = Card::ArmyType::Cavalry;
 					c->territory = m_territories[territory];
+					c->tex = &m_cavTex;
 					break;
 				case 'a':
 					c->type = Card::ArmyType::Artillery;
 					c->territory = m_territories[territory];
+					c->tex = &m_artTex;
 					break;
 				case 'j':
 					c->type = Card::ArmyType::Joker;
 					c->territory = nullptr;
+					c->tex = &m_jkrTex;
 					break;
 				default:
 					break;
 				}
+
+				if (c->tex)
+				{
+					c->texSprite.setTexture(*c->tex, true);
+				}
+				c->txt.setFont(m_font);
+				if (c->territory)
+					c->txt.setString(c->territory->GetName());
+				else
+					c->txt.setString("");
+				c->txt.setFillColor(sf::Color::Black);
+				c->txt.setScale(sf::Vector2f(0.4f, 0.4f));
+				c->rect.setSize(sf::Vector2f(100, 100));
+				c->rect.setFillColor(sf::Color::White);
+
 				m_freeCards.push_back(c);
 			}
 			else if (line[0] == 'm')
@@ -452,4 +465,30 @@ void Game::GiveRandomCard(Player* player)
 	player->AddCard(m_freeCards[cardIndex]);
 	m_busyCards.push_back(m_freeCards[cardIndex]);
 	m_freeCards.erase(m_freeCards.begin() + cardIndex);
+}
+
+void Card::render(sf::RenderWindow* window)
+{
+	window->draw(rect);
+	window->draw(txt);
+	window->draw(texSprite);
+}
+
+void Card::setPos(sf::Vector2f pos)
+{
+	rect.setPosition(pos);
+	if(territory)
+		texSprite.setPosition(pos + sf::Vector2f(rect.getLocalBounds().width/2 - texSprite.getLocalBounds().width/2,50));
+	else
+		texSprite.setPosition(pos + sf::Vector2f(rect.getLocalBounds().width / 2 - texSprite.getLocalBounds().width / 2, 2));
+	txt.setPosition(pos + sf::Vector2f(5, 10));
+
+	if (txt.getLocalBounds().width > rect.getLocalBounds().width)
+	{
+		std::string tmp = txt.getString();
+		unsigned int pos = tmp.find(' ');
+		if(pos != -1)
+			tmp[pos] = '\n';
+		txt.setString(tmp);
+	}
 }
