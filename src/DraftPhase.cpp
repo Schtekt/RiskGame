@@ -50,6 +50,14 @@ DraftPhase::DraftPhase(Game* game, Player* player, sf::Font* font): Phase(game, 
 
 DraftPhase::~DraftPhase()
 {
+	if (m_maxToDeploy > 0)
+	{
+		for (int i = 0; i < m_maxToDeploy; i++)
+		{
+			int pos = rand() % m_currPlayer->GetNrOfTerritories();
+			m_currPlayer->GetTerritory(pos)->SetArmyCount(m_currPlayer->GetTerritory(pos)->GetArmyCount() + 1);
+		}
+	}
 }
 
 void DraftPhase::run(sf::RenderWindow* window)
