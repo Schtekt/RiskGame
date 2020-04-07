@@ -43,9 +43,9 @@ Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selecte
 
 	//=============TESTING=============================
 	AddPlayer("Jacob Andersson", sf::Color::Red);
-	AddPlayer("Leo Wikstr�m", sf::Color::Green);
+	AddPlayer("Leo Wikström", sf::Color::Green);
 	AddPlayer("Tim Johansson", sf::Color::Color(100, 100, 250));
-	AddPlayer("Anton �sbrink", sf::Color::Yellow);
+	AddPlayer("Anton Åsbrink", sf::Color::Yellow);
 	PlacePlayersRandom();
 	//=================================================
 
