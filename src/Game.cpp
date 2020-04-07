@@ -30,7 +30,64 @@ void Game::highlightPlayer(int index)
 	m_playerButtons[index]->setOutline(5, sf::Color::Color(255 - col->r, 255 - col->g, 255 - col->b));
 }
 
-Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selected(nullptr), m_playerTurn(0), m_firstDraft(true)
+bool Game::checkAllSelCardsDiff()
+{
+	bool res = true;
+	for (int i = 0; i < m_selectedCards.size(); i++)
+	{
+		if (m_selectedCards[i]->type != Card::ArmyType::Joker)
+		{
+			for (int j = i + 1; j < m_selectedCards.size(); j++)
+			{
+				if (m_selectedCards[i]->type == m_selectedCards[j]->type && m_selectedCards[j]->type != Card::ArmyType::Joker)
+				{
+					res = false;
+					break;
+				}
+			}
+		}
+	}
+	return res;
+}
+
+bool Game::checkAllSelCardsSame()
+{
+	bool res = true;
+	for (int i = 0; i < m_selectedCards.size(); i++)
+	{
+		if (m_selectedCards[i]->type != Card::ArmyType::Joker)
+		{
+			for (int j = i + 1; j < m_selectedCards.size(); j++)
+			{
+				if (m_selectedCards[i]->type != m_selectedCards[j]->type && m_selectedCards[j]->type != Card::ArmyType::Joker)
+				{
+					res = false;
+					break;
+				}
+			}
+		}
+	}
+	return res;
+}
+
+unsigned int Game::getUnitBonus(unsigned int index)
+{
+	switch (m_selectedCards[index]->type)
+	{
+	case Card::ArmyType::Infantry:
+		return 4;
+		break;
+	case Card::ArmyType::Cavalry:
+		return 6;
+		break;
+	case Card::ArmyType::Artillery:
+		return 8;
+		break;
+	}
+	return getUnitBonus(index + 1);
+}
+
+Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selected(nullptr), m_playerTurn(0), m_firstDraft(true), m_tradePossible(false)
 {
 	if (m_mapTex.loadFromFile("../assets/map.png") && m_redScaleData.loadFromFile("../assets/mapRedScaleV2.png"))
 	{
@@ -47,6 +104,10 @@ Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selecte
 	m_btnNextPhase.setFont(&m_font);
 	m_btnNextPhase.setPosition(sf::Vector2f(1000, 620));
 	m_btnNextPhase.setString("Start Game");
+
+	m_btnTradeCards.setFont(&m_font);
+	m_btnTradeCards.setPosition(sf::Vector2f(1300, 620));
+	m_btnTradeCards.setString("Trade Cards");
 
 	//=============TESTING=============================
 	AddPlayer("Jacob Andersson", sf::Color::Red);
@@ -159,7 +220,7 @@ void Game::run(sf::RenderWindow* window)
 						{
 							m_playerTurn = m_territories.size() % m_players.size();
 							m_phase = new DraftPhase(this, m_players[m_playerTurn], &m_font);
-							((DraftPhase*)m_phase)->setDeployAmount(1);
+							((DraftPhase*)m_phase)->SetDeployAmount(1);
 							highlightPlayer(m_playerTurn);
 							m_btnNextPhase.setString("End Draft");
 						}
@@ -175,7 +236,7 @@ void Game::run(sf::RenderWindow* window)
 									m_playerTurn++;
 
 								m_phase = new DraftPhase(this, m_players[m_playerTurn], &m_font);
-								((DraftPhase*)m_phase)->setDeployAmount(1);
+								((DraftPhase*)m_phase)->SetDeployAmount(1);
 								highlightPlayer(m_playerTurn);
 								m_btnNextPhase.setString("End Draft");
 								bool done = true;
@@ -205,9 +266,13 @@ void Game::run(sf::RenderWindow* window)
 						}
 						else if (dynamic_cast<DraftPhase*>(m_phase))
 						{
-							delete m_phase;
-							m_phase = new AttackPhase(this, m_players[m_playerTurn], &m_font);
-							m_btnNextPhase.setString("Go to Fortify phase");
+							if (m_players[m_playerTurn]->GetNrOfOwnedCards() < 5)
+							{
+								m_selectedCards.clear();
+								delete m_phase;
+								m_phase = new AttackPhase(this, m_players[m_playerTurn], &m_font);
+								m_btnNextPhase.setString("Go to Fortify phase");
+							}
 						}
 						else if (dynamic_cast<AttackPhase*>(m_phase))
 						{
@@ -237,6 +302,80 @@ void Game::run(sf::RenderWindow* window)
 						}
 					}
 				}
+
+				if (dynamic_cast<DraftPhase*>(m_phase))
+				{
+					if (m_tradePossible)
+					{
+						if (m_btnTradeCards.isClicked(pos))
+						{
+							DraftPhase* ph = dynamic_cast<DraftPhase*>(m_phase);
+							bool allDiff = checkAllSelCardsDiff();
+							bool allEq = checkAllSelCardsSame();
+
+							if (allDiff)
+							{
+								ph->AddDeployAmount(10);
+							}
+							else if (allEq)
+							{
+								ph->AddDeployAmount(getUnitBonus(0));
+							}
+
+							for (unsigned int i = 0; i < m_selectedCards.size(); i++)
+								m_players[m_playerTurn]->RemoveCard(m_selectedCards[i]);
+							m_selectedCards.clear();
+						}
+					}
+					bool selected = false;
+					for (int i = 0; i < m_players[m_playerTurn]->GetNrOfOwnedCards(); i++)
+					{
+						Card* tmp = m_players[m_playerTurn]->GetCard(i);
+
+						if (tmp->rect.getGlobalBounds().contains(pos.x, pos.y))
+						{
+							m_selectedCards.push_back(tmp);
+							tmp->rect.setOutlineColor(sf::Color::Blue);
+							tmp->rect.setOutlineThickness(3.f);
+							selected = true;
+						}
+						if (m_selectedCards.size() == 3)
+						{
+							bool allDiff = true;
+							bool allEq = true;
+							if (m_selectedCards[0]->type == m_selectedCards[1]->type && m_selectedCards[0]->type != Card::ArmyType::Joker)
+								allDiff = false;
+							else if(m_selectedCards[0]->type != Card::ArmyType::Joker && m_selectedCards[1]->type != Card::ArmyType::Joker)
+								allEq = false;
+
+							if (m_selectedCards[0]->type == m_selectedCards[2]->type && m_selectedCards[0]->type != Card::ArmyType::Joker)
+								allDiff = false;
+							else if(m_selectedCards[0]->type != Card::ArmyType::Joker && m_selectedCards[2]->type != Card::ArmyType::Joker)
+								allEq = false;
+
+							if (m_selectedCards[1]->type == m_selectedCards[2]->type && m_selectedCards[1]->type != Card::ArmyType::Joker)
+								allDiff = false;
+							else if(m_selectedCards[1]->type != Card::ArmyType::Joker && m_selectedCards[2]->type != Card::ArmyType::Joker)
+								allEq = false;
+
+							if (allEq || allDiff)
+								m_tradePossible = true;
+							else
+								m_tradePossible = false;
+						}
+						else
+							m_tradePossible = false;
+					}
+					if (!selected)
+					{
+						for (int i = 0; i < m_selectedCards.size(); i++)
+						{
+							m_selectedCards[i]->rect.setOutlineThickness(0.f);
+						}
+						m_selectedCards.clear();
+						m_tradePossible = false;
+					}
+				}
 			}
 	}
 }
@@ -260,9 +399,11 @@ void Game::render(sf::RenderWindow* window)
 	for (unsigned int i = 0; i < m_players[m_playerTurn]->GetNrOfOwnedCards(); i++)
 	{
 		Card* card = m_players[m_playerTurn]->GetCard(i);
-
 		card->render(window);
 	}
+
+	if (m_tradePossible)
+		m_btnTradeCards.render(window);
 
 	if(m_phase)
 		m_phase->render(window);

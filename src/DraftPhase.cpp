@@ -129,8 +129,16 @@ void DraftPhase::render(sf::RenderWindow* window)
 	}
 }
 
-void DraftPhase::setDeployAmount(unsigned int toDeploy)
+void DraftPhase::SetDeployAmount(unsigned int toDeploy)
 {
 	m_maxToDeploy = toDeploy;
 	m_toDeploy = toDeploy;
+}
+
+void DraftPhase::AddDeployAmount(unsigned int toAdd)
+{
+	m_maxToDeploy += toAdd;
+	m_toDeploy = m_maxToDeploy;
+	m_lblShowDeploy.setString(std::to_string(m_toDeploy));
+	m_btnAddToDeploy.setPosition(sf::Vector2f(m_lblShowDeploy.getPos().x + m_lblShowDeploy.getSize().x + 5, m_lblShowDeploy.getPos().y));
 }

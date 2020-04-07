@@ -63,6 +63,20 @@ void Player::RemoveCard(unsigned int index)
 	m_ownedCards.erase(m_ownedCards.begin() + index);
 }
 
+void Player::RemoveCard(Card* card)
+{
+	auto owned = m_ownedCards.begin();
+	while (owned != m_ownedCards.end())
+	{
+		if (*owned == card)
+		{
+			m_ownedCards.erase(owned);
+			break;
+		}
+		owned++;
+	}
+}
+
 Card* Player::GetCard(unsigned int index)
 {
 	return m_ownedCards[index];

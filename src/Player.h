@@ -24,6 +24,7 @@ public:
 	unsigned int GetArmyCount() const;
 	void AddCard(Card* card);
 	void RemoveCard(unsigned int index);
+	void RemoveCard(Card* card);
 	Card* GetCard(unsigned int index);
 	unsigned int GetNrOfOwnedCards() const;
 };

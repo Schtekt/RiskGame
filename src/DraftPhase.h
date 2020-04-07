@@ -22,7 +22,8 @@ public:
 	~DraftPhase();
 	void run(sf::RenderWindow* window);
 	void render(sf::RenderWindow* window);
-	void setDeployAmount(unsigned int toDeploy);
+	void SetDeployAmount(unsigned int toDeploy);
+	void AddDeployAmount(unsigned int toAdd);
 };
 
 #endif

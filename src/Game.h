@@ -56,12 +56,18 @@ private:
 	sf::Font m_font;
 	Phase* m_phase;
 	Button m_btnNextPhase;
+	Button m_btnTradeCards;
+
 	std::vector<Button*> m_playerButtons;
 	unsigned int m_playerTurn;
 	bool m_firstDraft;
-
+	std::vector<Card*> m_selectedCards;
+	bool m_tradePossible;
 	void shuffle(std::vector<Territory*>& list);
 	void highlightPlayer(int index);
+	bool checkAllSelCardsDiff();
+	bool checkAllSelCardsSame();
+	unsigned int getUnitBonus(unsigned int index);
 public:
 	Game(const sf::Font &font, const char* pathToMap);
 	virtual ~Game();
