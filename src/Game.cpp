@@ -32,7 +32,7 @@ void Game::highlightPlayer(int index)
 
 Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selected(nullptr), m_playerTurn(0), m_firstDraft(true)
 {
-	if (m_tex.loadFromFile("../assets/map.png") && m_redScaleData.loadFromFile("../assets/mapRedScale.png"))
+	if (m_tex.loadFromFile("../assets/map.png") && m_redScaleData.loadFromFile("../assets/mapRedScaleV2.png"))
 	{
 		m_sprite.setTexture(m_tex, true);
 	}
@@ -43,9 +43,9 @@ Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selecte
 
 	//=============TESTING=============================
 	AddPlayer("Jacob Andersson", sf::Color::Red);
-	AddPlayer("Leo Wikström", sf::Color::Green);
+	AddPlayer("Leo Wikstrï¿½m", sf::Color::Green);
 	AddPlayer("Tim Johansson", sf::Color::Color(100, 100, 250));
-	AddPlayer("Anton Åsbrink", sf::Color::Yellow);
+	AddPlayer("Anton ï¿½sbrink", sf::Color::Yellow);
 	PlacePlayersRandom();
 	//=================================================
 
