@@ -328,7 +328,14 @@ void Game::run(sf::RenderWindow* window)
 							}
 
 							for (unsigned int i = 0; i < m_selectedCards.size(); i++)
+							{
+								if (m_selectedCards[i]->territory->GetOwner() == m_players[m_playerTurn])
+								{
+									m_selectedCards[i]->territory->SetArmyCount(m_selectedCards[i]->territory->GetArmyCount() + 2);
+									break;
+								}
 								m_players[m_playerTurn]->RemoveCard(m_selectedCards[i]);
+							}
 
 							m_selectedCards.clear();
 						}
