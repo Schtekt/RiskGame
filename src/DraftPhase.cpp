@@ -50,7 +50,7 @@ DraftPhase::DraftPhase(Game* game, Player* player, sf::Font* font): Phase(game, 
 
 DraftPhase::~DraftPhase()
 {
-	if (m_maxToDeploy > 0)
+	if (m_maxToDeploy > 0 && m_currPlayer->GetNrOfTerritories() > 0)
 	{
 		for (int i = 0; i < m_maxToDeploy; i++)
 		{
