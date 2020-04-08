@@ -70,6 +70,7 @@ private:
 	bool checkAllSelCardsSame();
 	unsigned int getUnitBonus(unsigned int index);
 	void sortCardButtons(sf::RenderWindow* window);
+	int isCardSelected(Card* card);
 public:
 	Game(const sf::Font &font, const char* pathToMap);
 	virtual ~Game();

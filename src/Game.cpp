@@ -98,6 +98,16 @@ void Game::sortCardButtons(sf::RenderWindow* window)
 	}
 }
 
+int Game::isCardSelected(Card* card)
+{
+	for (auto it = m_selectedCards.begin(); it != m_selectedCards.end(); it++)
+	{
+		if (card == *it)
+			return it - m_selectedCards.begin();
+	}
+	return -1;
+}
+
 Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selected(nullptr), m_playerTurn(0), m_firstDraft(true), m_tradePossible(false)
 {
 	if (m_mapTex.loadFromFile("../assets/map.png") && m_redScaleData.loadFromFile("../assets/mapRedScaleV2.png"))
@@ -340,17 +350,27 @@ void Game::run(sf::RenderWindow* window)
 							m_selectedCards.clear();
 						}
 					}
-					bool selected = false;
+					bool clickedCard = false;
 					for (int i = 0; i < m_players[m_playerTurn]->GetNrOfOwnedCards(); i++)
 					{
 						Card* tmp = m_players[m_playerTurn]->GetCard(i);
 
 						if (tmp->rect.getGlobalBounds().contains(pos.x, pos.y))
 						{
-							m_selectedCards.push_back(tmp);
-							tmp->rect.setOutlineColor(sf::Color::Blue);
-							tmp->rect.setOutlineThickness(3.f);
-							selected = true;
+							int cardIndex = isCardSelected(tmp);
+							if (cardIndex >= 0)
+							{
+								m_selectedCards.erase(m_selectedCards.begin() + cardIndex);
+								tmp->rect.setOutlineThickness(0.f);
+								clickedCard = true;
+							}
+							else
+							{
+								m_selectedCards.push_back(tmp);
+								tmp->rect.setOutlineColor(sf::Color::Blue);
+								tmp->rect.setOutlineThickness(3.f);
+								clickedCard = true;
+							}
 						}
 						if (m_selectedCards.size() == 3)
 						{
@@ -365,7 +385,8 @@ void Game::run(sf::RenderWindow* window)
 						else
 							m_tradePossible = false;
 					}
-					if (!selected)
+
+					if (!clickedCard)
 					{
 						for (int i = 0; i < m_selectedCards.size(); i++)
 						{
