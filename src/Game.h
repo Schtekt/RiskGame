@@ -38,6 +38,7 @@ class Game : public State
 {
 private:
 	std::vector<Player*> m_players;
+	std::vector<Player*> m_defeatedPlayers;
 	std::vector<Territory*> m_territories;
 	std::vector<Continent*> m_continents;
 	std::vector<Card*> m_freeCards;
@@ -68,6 +69,7 @@ private:
 	bool checkAllSelCardsDiff();
 	bool checkAllSelCardsSame();
 	unsigned int getUnitBonus(unsigned int index);
+	void sortCardButtons(sf::RenderWindow* window);
 public:
 	Game(const sf::Font &font, const char* pathToMap);
 	virtual ~Game();
@@ -83,6 +85,7 @@ public:
 	Continent* GetContinent(unsigned int index) const;
 	unsigned int GetNrOfContinents() const;
 	void GiveRandomCard(Player* player);
+	void PlayerDefeated(Player* victor, Player* player);
 };
 
 #endif

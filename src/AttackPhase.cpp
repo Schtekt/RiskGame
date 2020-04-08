@@ -210,6 +210,11 @@ void AttackPhase::run(sf::RenderWindow* window)
 
 			if (m_target->GetArmyCount() == 0)
 			{
+				Player* opponent = m_target->GetOwner();
+				if (opponent->GetNrOfTerritories() == 1)
+				{
+					m_game->PlayerDefeated(m_currPlayer, opponent);
+				}
 				m_occupy = true;
 				m_wonOnce = true;
 				m_target->GetOwner()->RemoveOwnership(m_target);

@@ -87,6 +87,17 @@ unsigned int Game::getUnitBonus(unsigned int index)
 	return getUnitBonus(index + 1);
 }
 
+void Game::sortCardButtons(sf::RenderWindow* window)
+{
+	for (int i = 0; i < m_players[m_playerTurn]->GetNrOfOwnedCards(); i++)
+	{
+		Card* tmp = m_players[m_playerTurn]->GetCard(i);
+		float xCoord = window->getSize().x;
+		xCoord -= (3 + tmp->rect.getLocalBounds().width) * (i + 1);
+		tmp->setPos(sf::Vector2f(xCoord, 700));
+	}
+}
+
 Game::Game(const sf::Font& font, const char* pathToMap): m_font(font), m_selected(nullptr), m_playerTurn(0), m_firstDraft(true), m_tradePossible(false)
 {
 	if (m_mapTex.loadFromFile("../assets/map.png") && m_redScaleData.loadFromFile("../assets/mapRedScaleV2.png"))
@@ -173,7 +184,7 @@ void Game::run(sf::RenderWindow* window)
 			{
 				sf::Vector2i pos = sf::Mouse::getPosition(*window);
 
-				if (m_redScaleData.getSize().x >= (unsigned int)pos.x && m_redScaleData.getSize().y >= (unsigned int)pos.y)
+				if (m_redScaleData.getSize().x > (unsigned int)pos.x && m_redScaleData.getSize().y > (unsigned int)pos.y)
 				{
 					sf::Color col = m_redScaleData.getPixel(pos.x, pos.y);
 					if (m_selected)
@@ -272,6 +283,7 @@ void Game::run(sf::RenderWindow* window)
 								delete m_phase;
 								m_phase = new AttackPhase(this, m_players[m_playerTurn], &m_font);
 								m_btnNextPhase.setString("Go to Fortify phase");
+								sortCardButtons(window);
 							}
 						}
 						else if (dynamic_cast<AttackPhase*>(m_phase))
@@ -279,14 +291,7 @@ void Game::run(sf::RenderWindow* window)
 							delete m_phase;
 							m_phase = new FortifyPhase(this, m_players[m_playerTurn], &m_font);
 							m_btnNextPhase.setString("End turn");
-
-							for (int i = 0; i < m_players[m_playerTurn]->GetNrOfOwnedCards(); i++)
-							{
-								Card* tmp = m_players[m_playerTurn]->GetCard(i);
-								float xCoord = window->getSize().x;
-								xCoord -= (3 + tmp->rect.getLocalBounds().width)*(i + 1);
-								tmp->setPos(sf::Vector2f(xCoord, 700));
-							}
+							sortCardButtons(window);
 						}
 						else if (dynamic_cast<FortifyPhase*>(m_phase))
 						{
@@ -324,6 +329,7 @@ void Game::run(sf::RenderWindow* window)
 
 							for (unsigned int i = 0; i < m_selectedCards.size(); i++)
 								m_players[m_playerTurn]->RemoveCard(m_selectedCards[i]);
+
 							m_selectedCards.clear();
 						}
 					}
@@ -341,22 +347,8 @@ void Game::run(sf::RenderWindow* window)
 						}
 						if (m_selectedCards.size() == 3)
 						{
-							bool allDiff = true;
-							bool allEq = true;
-							if (m_selectedCards[0]->type == m_selectedCards[1]->type && m_selectedCards[0]->type != Card::ArmyType::Joker)
-								allDiff = false;
-							else if(m_selectedCards[0]->type != Card::ArmyType::Joker && m_selectedCards[1]->type != Card::ArmyType::Joker)
-								allEq = false;
-
-							if (m_selectedCards[0]->type == m_selectedCards[2]->type && m_selectedCards[0]->type != Card::ArmyType::Joker)
-								allDiff = false;
-							else if(m_selectedCards[0]->type != Card::ArmyType::Joker && m_selectedCards[2]->type != Card::ArmyType::Joker)
-								allEq = false;
-
-							if (m_selectedCards[1]->type == m_selectedCards[2]->type && m_selectedCards[1]->type != Card::ArmyType::Joker)
-								allDiff = false;
-							else if(m_selectedCards[1]->type != Card::ArmyType::Joker && m_selectedCards[2]->type != Card::ArmyType::Joker)
-								allEq = false;
+							bool allDiff = checkAllSelCardsDiff();
+							bool allEq = checkAllSelCardsSame();
 
 							if (allEq || allDiff)
 								m_tradePossible = true;
@@ -606,6 +598,30 @@ void Game::GiveRandomCard(Player* player)
 	player->AddCard(m_freeCards[cardIndex]);
 	m_busyCards.push_back(m_freeCards[cardIndex]);
 	m_freeCards.erase(m_freeCards.begin() + cardIndex);
+}
+
+void Game::PlayerDefeated(Player* victor, Player* player)
+{
+	for (auto iter = m_players.begin(); iter != m_players.end(); iter++)
+	{
+		if (player == *iter)
+		{
+			unsigned int pos = iter - m_players.begin();
+			m_playerButtons[pos]->setColor(sf::Color::Color(100, 100, 100));
+			unsigned int nrOfCards = player->GetNrOfOwnedCards();
+			for (unsigned int i = 0; i < nrOfCards; i++)
+			{
+				victor->AddCard(player->GetCard(i));
+			}
+			for (unsigned int i = 0; i < nrOfCards; i++)
+			{
+				player->RemoveCard((unsigned int)0);
+			}
+			m_defeatedPlayers.push_back(player);
+			m_players.erase(iter);
+			break;
+		}
+	}
 }
 
 void Card::render(sf::RenderWindow* window)
