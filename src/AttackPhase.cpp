@@ -206,6 +206,7 @@ void AttackPhase::run(sf::RenderWindow* window)
 				battle(m_selected, m_target, m_nrOfDice);
 				m_nrOfDice = std::min(m_nrOfDice, m_selected->GetArmyCount() - 1);
 				m_lblNrOfDice.setString(std::to_string(m_nrOfDice));
+				m_btnAddDice.setPosition(sf::Vector2f(m_lblNrOfDice.getPos().x + m_lblNrOfDice.getSize().x + 5, m_lblNrOfDice.getPos().y));
 			}
 
 			if (m_target->GetArmyCount() == 0)
@@ -214,6 +215,7 @@ void AttackPhase::run(sf::RenderWindow* window)
 				if (opponent->GetNrOfTerritories() == 1)
 				{
 					m_game->PlayerDefeated(m_currPlayer, opponent);
+					m_game->SortCardButtons(window);
 				}
 				m_occupy = true;
 				m_wonOnce = true;

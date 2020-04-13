@@ -70,7 +70,6 @@ private:
 	bool checkAllSelCardsDiff();
 	bool checkAllSelCardsSame();
 	unsigned int getUnitBonus(unsigned int index);
-	void sortCardButtons(sf::RenderWindow* window);
 	int isCardSelected(Card* card);
 public:
 	Game(const sf::Font &font, const char* pathToMap);
@@ -88,6 +87,7 @@ public:
 	unsigned int GetNrOfContinents() const;
 	void GiveRandomCard(Player* player);
 	void PlayerDefeated(Player* victor, Player* player);
+	void SortCardButtons(sf::RenderWindow* window);
 };
 
 #endif

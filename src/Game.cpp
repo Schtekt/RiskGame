@@ -87,7 +87,7 @@ unsigned int Game::getUnitBonus(unsigned int index)
 	return getUnitBonus(index + 1);
 }
 
-void Game::sortCardButtons(sf::RenderWindow* window)
+void Game::SortCardButtons(sf::RenderWindow* window)
 {
 	for (int i = 0; i < m_players[m_playerTurn]->GetNrOfOwnedCards(); i++)
 	{
@@ -293,7 +293,7 @@ void Game::run(sf::RenderWindow* window)
 								delete m_phase;
 								m_phase = new AttackPhase(this, m_players[m_playerTurn], &m_font);
 								m_btnNextPhase.setString("Go to Fortify phase");
-								sortCardButtons(window);
+								SortCardButtons(window);
 							}
 						}
 						else if (dynamic_cast<AttackPhase*>(m_phase))
@@ -301,7 +301,7 @@ void Game::run(sf::RenderWindow* window)
 							delete m_phase;
 							m_phase = new FortifyPhase(this, m_players[m_playerTurn], &m_font);
 							m_btnNextPhase.setString("End turn");
-							sortCardButtons(window);
+							SortCardButtons(window);
 						}
 						else if (dynamic_cast<FortifyPhase*>(m_phase))
 						{
@@ -337,16 +337,13 @@ void Game::run(sf::RenderWindow* window)
 								ph->AddDeployAmount(getUnitBonus(0));
 							}
 
-							bool gainedTroops = false;
-
 							for (unsigned int i = 0; i < m_selectedCards.size(); i++)
 							{
 								if (m_selectedCards[i]->territory)
 								{
-									if (m_selectedCards[i]->territory->GetOwner() == m_players[m_playerTurn] && !gainedTroops)
+									if (m_selectedCards[i]->territory->GetOwner() == m_players[m_playerTurn])
 									{
 										m_selectedCards[i]->territory->SetArmyCount(m_selectedCards[i]->territory->GetArmyCount() + 2);
-										gainedTroops = !gainedTroops;
 									}
 								}
 								m_players[m_playerTurn]->RemoveCard(m_selectedCards[i]);
