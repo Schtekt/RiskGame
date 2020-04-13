@@ -60,6 +60,7 @@ private:
 	Button m_btnTradeCards;
 
 	std::vector<Button*> m_playerButtons;
+	std::vector<Button*> m_deadPlayerButtons;
 	unsigned int m_playerTurn;
 	bool m_firstDraft;
 	std::vector<Card*> m_selectedCards;

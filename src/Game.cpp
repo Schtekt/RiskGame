@@ -337,12 +337,17 @@ void Game::run(sf::RenderWindow* window)
 								ph->AddDeployAmount(getUnitBonus(0));
 							}
 
+							bool gainedTroops = false;
+
 							for (unsigned int i = 0; i < m_selectedCards.size(); i++)
 							{
-								if (m_selectedCards[i]->territory->GetOwner() == m_players[m_playerTurn])
+								if (m_selectedCards[i]->territory)
 								{
-									m_selectedCards[i]->territory->SetArmyCount(m_selectedCards[i]->territory->GetArmyCount() + 2);
-									break;
+									if (m_selectedCards[i]->territory->GetOwner() == m_players[m_playerTurn] && !gainedTroops)
+									{
+										m_selectedCards[i]->territory->SetArmyCount(m_selectedCards[i]->territory->GetArmyCount() + 2);
+										gainedTroops = !gainedTroops;
+									}
 								}
 								m_players[m_playerTurn]->RemoveCard(m_selectedCards[i]);
 							}
@@ -372,6 +377,7 @@ void Game::run(sf::RenderWindow* window)
 								clickedCard = true;
 							}
 						}
+
 						if (m_selectedCards.size() == 3)
 						{
 							bool allDiff = checkAllSelCardsDiff();
@@ -412,6 +418,10 @@ void Game::render(sf::RenderWindow* window)
 	for (unsigned int i = 0; i < m_playerButtons.size(); i++)
 	{
 		m_playerButtons[i]->render(window);
+	}
+	for (unsigned int i = 0; i < m_deadPlayerButtons.size(); i++)
+	{
+		m_deadPlayerButtons[i]->render(window);
 	}
 
 	m_btnNextPhase.render(window);
@@ -636,6 +646,8 @@ void Game::PlayerDefeated(Player* victor, Player* player)
 		{
 			unsigned int pos = iter - m_players.begin();
 			m_playerButtons[pos]->setColor(sf::Color::Color(100, 100, 100));
+			m_deadPlayerButtons.push_back(m_playerButtons[pos]);
+			m_playerButtons.erase(m_playerButtons.begin() + pos);
 			unsigned int nrOfCards = player->GetNrOfOwnedCards();
 			for (unsigned int i = 0; i < nrOfCards; i++)
 			{
@@ -647,6 +659,8 @@ void Game::PlayerDefeated(Player* victor, Player* player)
 			}
 			m_defeatedPlayers.push_back(player);
 			m_players.erase(iter);
+			if (pos < m_playerTurn)
+				m_playerTurn--;
 			break;
 		}
 	}
