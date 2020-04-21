@@ -8,6 +8,9 @@
 #include "Player.h"
 #include <iostream>
 
+#define PLAYER_NAME_HOST 0
+#define PLAYER_NAME 1
+
 class Menu : public State {
 private:
 	class Div {
@@ -34,15 +37,17 @@ private:
 	Button gameBtn;
 	Button hostBtn;
 	Button joinBtn;
+	Button name;
 
 	Div lobby;
 	sf::Text ip;
 	std::vector<sf::Text> players;
+	Button addBtn;
 
 	Div join;
 	Button connectBtn;
-	sf::Text ipConnect;
-	std::string ipConnectStr;
+	Button ipConnect;
+	std::string inputStr;
 
 	Network network;
 
