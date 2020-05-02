@@ -20,15 +20,18 @@ int main()
 {
 	std::vector<std::vector<GoMove>> matches;
 	ReadDirectory("../GoGames/", &matches, "");
-    sf::RenderWindow window(sf::VideoMode(800, 800), "GO!");
     sf::RenderWindow window(sf::VideoMode(900, 800), "GO!");
 
 	Game game;
-
-	for (const auto& match : matches)
+	for (unsigned int i = 0; i < 5; i++)
 	{
-		//if(match.size() > 1)
-		game.addStone(match[0].horisontal, match[0].vertical);
+		for (const auto& match : matches)
+		{
+			if (match.size() > i)
+			{
+				game.addStone(match[i].horisontal, match[i].vertical,match[i].player, i/2);
+			}
+		}
 	}
     while (window.isOpen())
     {
