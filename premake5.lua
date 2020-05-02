@@ -5,6 +5,7 @@ workspace "RiskGame"
     project "RiskGame"
     kind "ConsoleApp"
     language "C++"
+    cppdialect "C++17"
     targetdir "bin/%{cfg.buildcfg}"
     files { "src/**.*" }
     vpaths {
@@ -30,25 +31,25 @@ workspace "RiskGame"
     }
     
     filter "configurations:Debug"
-    defines { "DEBUG" }
-    symbols "On"
-    links
-    {	
-        "sfml-graphics-s-d",
-        "sfml-window-s-d",
-        "sfml-system-s-d",
-        "sfml-audio-s-d",
-        "sfml-network-s-d"
-    }
+        defines { "_DEBUG" }
+        symbols "On"
+        links
+        {	
+            "sfml-graphics-s-d",
+            "sfml-window-s-d",
+            "sfml-system-s-d",
+            "sfml-audio-s-d",
+            "sfml-network-s-d"
+        }
     
     filter "configurations:Release"
-    defines { "NDEBUG" }
-    optimize "On"
-    links
-    {	
-        "sfml-graphics-s",
-        "sfml-window-s",
-        "sfml-system-s",
-        "sfml-audio-s",
-        "sfml-network-s"
-    }
+        defines { "NDEBUG" }
+        optimize "On"
+        links
+        {	
+            "sfml-graphics-s",
+            "sfml-window-s",
+            "sfml-system-s",
+            "sfml-audio-s",
+            "sfml-network-s"
+        }

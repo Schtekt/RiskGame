@@ -1,25 +1,68 @@
-#include <SFML/Graphics.hpp>
-#include "Menu.h"
-#include "Game.h"
-#include "StateManager.h"
+#include <filesystem>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+struct GoMove
+{
+	bool player;
+	unsigned int horisontal;
+	unsigned int vertical;
+};
+
+void ReadGoMatch(const char* path, std::vector<GoMove>* match);
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(1600, 900), "Risk Game");
+	std::vector<GoMove> match;
+	std::filesystem::path p("../GoGames/");
+	std::filesystem::directory_iterator start(p);
 
-	Menu menu;
-	StateManager::getInstance().push(&menu);
+	for (const auto& entry : start)
+	{
+		std::cout << entry.path() << std::endl;
+		std::string tmp = entry.path().string();
+		ReadGoMatch(tmp.c_str(), &match);
+	}
+	return 0;
+}
 
-    while (window.isOpen())
-    {
+void ReadGoMatch(const char* path, std::vector<GoMove>* match)
+{
+	std::fstream f;
+	f.open(path);
 
-        window.clear();
+	if (f.is_open())
+	{
+		std::stringstream ss;
+		char junk;
+		char line[128];
 
-		StateManager::getInstance().run(&window);
-		StateManager::getInstance().render(&window);
+		while (!f.eof())
+		{
+			f.getline(line, 128);
+			ss << line;
+			ss >> junk;
+			if (junk == ';')
+			{
+				GoMove move;
+				
+				char player;
+				char horisontal;
+				char vertical;
 
-        window.display();
-    }
+				ss >> player >> junk >> horisontal >> vertical;
 
-    return 0;
+				move.player = player == 'B' ? true : false;
+				move.horisontal = horisontal;
+				move.horisontal -= 'a' + (move.horisontal > 'i');
+				move.vertical = vertical;
+				move.vertical -= 'a' + (move.horisontal > 'i');
+
+				match->push_back(move);
+			}
+			ss.str("");
+			ss.clear();
+		}
+	}
 }
