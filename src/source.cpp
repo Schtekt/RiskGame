@@ -21,9 +21,9 @@ int main()
 	std::vector<std::vector<GoMove>> matches;
 	ReadDirectory("../GoGames/", &matches, "");
     sf::RenderWindow window(sf::VideoMode(800, 800), "GO!");
+    sf::RenderWindow window(sf::VideoMode(900, 800), "GO!");
 
 	Game game;
-	sf::Event event;
 
 	for (const auto& match : matches)
 	{
@@ -32,16 +32,13 @@ int main()
 	}
     while (window.isOpen())
     {
-		if (window.pollEvent(event)) {
-			if (event.type == sf::Event::Closed) {
-				window.close();
-			}
-		}
-
 
         window.clear();
 
-		game.render(window);window.display();
+		game.run(window);
+		game.render(window);
+
+        window.display();
     }
 
     return 0;
