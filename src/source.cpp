@@ -1,8 +1,11 @@
+#include <SFML/Graphics.hpp>
+#include "Game.h"
 #include <filesystem>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
+
 struct GoMove
 {
 	bool player;
@@ -15,16 +18,38 @@ void ReadDirectory(const char* path, std::vector<std::vector<GoMove>>* match, st
 
 int main()
 {
-	std::vector<std::vector<GoMove>> match;
-	ReadDirectory("../GoGames/", &match, "");
-	return 0;
-}
+	std::vector<std::vector<GoMove>> matches;
+	ReadDirectory("../GoGames/", &matches, "");
+    sf::RenderWindow window(sf::VideoMode(800, 800), "GO!");
 
+	Game game;
+	sf::Event event;
+
+	for (const auto& match : matches)
+	{
+		if(match.size() > 1)
+			game.addStone(match[1].horisontal, match[1].vertical);
+	}
+    while (window.isOpen())
+    {
+		if (window.pollEvent(event)) {
+			if (event.type == sf::Event::Closed) {
+				window.close();
+			}
+		}
+
+
+        window.clear();
+
+		game.render(window);window.display();
+    }
+
+    return 0;
+}
 void ReadDirectory(const char* path, std::vector<std::vector<GoMove>>* match, std::string indentation)
 {
 	std::filesystem::path p(path);
 	std::filesystem::directory_iterator start(p);
-
 	for (const auto& entry : start)
 	{
 		std::string tmp = entry.path().string();
