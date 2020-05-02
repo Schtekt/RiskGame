@@ -11,20 +11,36 @@ struct GoMove
 };
 
 void ReadGoMatch(const char* path, std::vector<GoMove>* match);
+void ReadDirectory(const char* path, std::vector<std::vector<GoMove>>* match, std::string indentation);
 
 int main()
 {
-	std::vector<GoMove> match;
-	std::filesystem::path p("../GoGames/");
+	std::vector<std::vector<GoMove>> match;
+	ReadDirectory("../GoGames/", &match, "");
+	return 0;
+}
+
+void ReadDirectory(const char* path, std::vector<std::vector<GoMove>>* match, std::string indentation)
+{
+	std::filesystem::path p(path);
 	std::filesystem::directory_iterator start(p);
 
 	for (const auto& entry : start)
 	{
-		std::cout << entry.path() << std::endl;
 		std::string tmp = entry.path().string();
-		ReadGoMatch(tmp.c_str(), &match);
+		if (entry.is_directory())
+		{
+			std::cout << indentation << "Reading in folder: " << entry.path() << std::endl;
+			ReadDirectory(tmp.c_str(), match, indentation + "\t");
+		}
+		else
+		{
+			std::cout << indentation << "\tReading match file: " << entry.path() << std::endl;
+			std::vector<GoMove> tmpMatch;
+			ReadGoMatch(tmp.c_str(), &tmpMatch);
+			match->push_back(tmpMatch);
+		}
 	}
-	return 0;
 }
 
 void ReadGoMatch(const char* path, std::vector<GoMove>* match)
@@ -36,11 +52,11 @@ void ReadGoMatch(const char* path, std::vector<GoMove>* match)
 	{
 		std::stringstream ss;
 		char junk;
-		char line[128];
+		char line[1000];
 
 		while (!f.eof())
 		{
-			f.getline(line, 128);
+			f.getline(line, 1000, ']');
 			ss << line;
 			ss >> junk;
 			if (junk == ';')
