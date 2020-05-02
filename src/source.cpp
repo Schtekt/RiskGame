@@ -1,22 +1,25 @@
 #include <SFML/Graphics.hpp>
-#include "Menu.h"
 #include "Game.h"
-#include "StateManager.h"
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(1600, 900), "Risk Game");
+    sf::RenderWindow window(sf::VideoMode(800, 800), "GO!");
 
-	Menu menu;
-	StateManager::getInstance().push(&menu);
+	Game game;
+	sf::Event event;
 
     while (window.isOpen())
     {
+		if (window.pollEvent(event)) {
+			if (event.type == sf::Event::Closed) {
+				window.close();
+			}
+		}
+
 
         window.clear();
 
-		StateManager::getInstance().run(&window);
-		StateManager::getInstance().render(&window);
+		game.render(window);
 
         window.display();
     }
