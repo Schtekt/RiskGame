@@ -45,18 +45,19 @@ void Game::addStone(int x, int y)
 	Stone* temp = &stones[x][y];
 
 	temp->nrOfStones++;
+	nrOfStones++;
 	if (temp->nrOfStones > highestStoneCount) {
 		highestStoneCount = temp->nrOfStones;
 
 		for (int i = 0; i < 19; i++) {
 			for (int j = 0; j < 19; j++) {
 				if(stones[j][i].nrOfStones > 0)
-					stones[j][i].stone.setFillColor(sf::Color(0, 0, 0, 255 / (highestStoneCount / stones[j][i].nrOfStones)));
+					stones[j][i].stone.setFillColor(sf::Color(0, 0, 0, 255 / (nrOfStones / stones[j][i].nrOfStones)));
 			}
 		}
 	}
 
-	temp->stone.setFillColor(sf::Color(0, 0, 0, 255 / (highestStoneCount / temp->nrOfStones)));
+	temp->stone.setFillColor(sf::Color(0, 0, 0, 255 / (nrOfStones / temp->nrOfStones)));
 }
 
 void Game::render(sf::RenderWindow& window)

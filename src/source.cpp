@@ -27,8 +27,8 @@ int main()
 
 	for (const auto& match : matches)
 	{
-		if(match.size() > 1)
-			game.addStone(match[1].horisontal, match[1].vertical);
+		//if(match.size() > 1)
+		game.addStone(match[0].horisontal, match[0].vertical);
 	}
     while (window.isOpen())
     {
