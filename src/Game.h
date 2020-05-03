@@ -23,7 +23,8 @@ private:
 
 	Stone stones[19][19];
 	int highestStoneCount[2][50];
-	int turnCounter = 1;
+	int totalNrOfStones[2][50];
+	int turnCounter = 0;
 	int showColour = 0;
 
 	sf::Font font;

@@ -23,7 +23,7 @@ int main()
     sf::RenderWindow window(sf::VideoMode(900, 800), "GO!");
 
 	Game game;
-	for (unsigned int i = 0; i < 5; i++)
+	for (unsigned int i = 0; i < 10; i++)
 	{
 		for (const auto& match : matches)
 		{
