@@ -15,11 +15,13 @@ struct GoMove
 
 void ReadGoMatch(const char* path, std::vector<GoMove>* match);
 void ReadDirectory(const char* path, std::vector<std::vector<GoMove>>* match, std::string indentation);
+void PrintToCSV(const char* path, std::vector<std::vector<GoMove>>* matches);
 
 int main()
 {
 	std::vector<std::vector<GoMove>> matches;
 	ReadDirectory("../GoGames/", &matches, "");
+	PrintToCSV("../tmp.csv", &matches);
     sf::RenderWindow window(sf::VideoMode(900, 800), "GO!");
 
 	Game game;
@@ -104,6 +106,25 @@ void ReadGoMatch(const char* path, std::vector<GoMove>* match)
 			}
 			ss.str("");
 			ss.clear();
+		}
+	}
+}
+
+void PrintToCSV(const char* path, std::vector<std::vector<GoMove>>* matches)
+{
+	std::ofstream file;
+	file.open(path, std::ios::out | std::ios::trunc);
+	if (file.is_open())
+	{
+		file.clear();
+		
+		for (auto& match : *matches)
+		{
+			for (auto& move : match)
+			{
+				file << move.player << ";" << move.horisontal << ";" << move.vertical << ";";
+			}
+			file << std::endl;
 		}
 	}
 }
