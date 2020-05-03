@@ -122,7 +122,7 @@ void PrintToCSV(const char* path, std::vector<std::vector<GoMove>>* matches)
 		{
 			for (auto& move : match)
 			{
-				file << move.player << ";" << move.horisontal << ";" << move.vertical << ";";
+				file << (move.player ? 'b' : 'w') << ";" << move.horisontal << ";" << move.vertical << ";";
 			}
 			file << std::endl;
 		}
