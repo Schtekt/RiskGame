@@ -31,7 +31,7 @@ int main()
 		{
 			if (match.size() > i)
 			{
-				game.addStone(match[i].horisontal, match[i].vertical,match[i].player, i/2);
+				game.addStone(match[i].horisontal, match[i].vertical, !match[i].player, i/2);
 			}
 		}
 	}
@@ -98,9 +98,9 @@ void ReadGoMatch(const char* path, std::vector<GoMove>* match)
 
 				move.player = player == 'B' ? true : false;
 				move.horisontal = horisontal;
-				move.horisontal -= 'a' + (move.horisontal > 'i');
+				move.horisontal -= 'a';
 				move.vertical = vertical;
-				move.vertical -= 'a' + (move.horisontal > 'i');
+				move.vertical -= 'a';
 
 				match->push_back(move);
 			}
