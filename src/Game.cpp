@@ -43,6 +43,8 @@ Game::Game()
 	for (int i = 0; i < 50; i++) {
 		highestStoneCount[0][i] = 0;
 		highestStoneCount[1][i] = 0;
+		totalNrOfStones[0][i] = 0;
+		totalNrOfStones[1][i] = 0;
 	}
 
 	int radius = 18;
@@ -61,6 +63,7 @@ void Game::addStone(int x, int y, int colour, int turn)
 	Stone* temp = &stones[x][y];
 
 	temp->nrOfStones[colour][turn]++;
+	totalNrOfStones[colour][turn]++;
 	if (temp->nrOfStones[colour][turn] > highestStoneCount[colour][turn]) {
 		highestStoneCount[colour][turn] = temp->nrOfStones[colour][turn];
 	}
@@ -83,7 +86,8 @@ void Game::run(sf::RenderWindow& window)
 					for (int i = 0; i < 19; i++) {
 						for (int j = 0; j < 19; j++) {
 							if (stones[j][i].nrOfStones[showColour][turnCounter] > 0)
-								stones[j][i].stone.setFillColor(sf::Color(255 * showColour, 255 * showColour, 255 * showColour, 255 / (highestStoneCount[showColour][turnCounter] / stones[j][i].nrOfStones[showColour][turnCounter])));
+								//stones[j][i].stone.setFillColor(sf::Color(255 * showColour, 255 * showColour, 255 * showColour, 255 / (highestStoneCount[showColour][turnCounter] / stones[j][i].nrOfStones[showColour][turnCounter])));
+								stones[j][i].stone.setFillColor(sf::Color(255 * showColour, 255 * showColour, 255 * showColour, 255 / (totalNrOfStones[showColour][turnCounter] / stones[j][i].nrOfStones[showColour][turnCounter])));
 							else
 								stones[j][i].stone.setFillColor(sf::Color(255 * showColour, 255 * showColour, 255 * showColour, 0));
 						}
@@ -97,7 +101,8 @@ void Game::run(sf::RenderWindow& window)
 					for (int i = 0; i < 19; i++) {
 						for (int j = 0; j < 19; j++) {
 							if (stones[j][i].nrOfStones[showColour][turnCounter] > 0)
-								stones[j][i].stone.setFillColor(sf::Color(255 * showColour, 255 * showColour, 255 * showColour, 255 / (highestStoneCount[showColour][turnCounter] / stones[j][i].nrOfStones[showColour][turnCounter])));
+								//stones[j][i].stone.setFillColor(sf::Color(255 * showColour, 255 * showColour, 255 * showColour, 255 / (highestStoneCount[showColour][turnCounter] / stones[j][i].nrOfStones[showColour][turnCounter])));
+								stones[j][i].stone.setFillColor(sf::Color(255 * showColour, 255 * showColour, 255 * showColour, 255 / (totalNrOfStones[showColour][turnCounter] / stones[j][i].nrOfStones[showColour][turnCounter])));
 							else
 								stones[j][i].stone.setFillColor(sf::Color(255 * showColour, 255 * showColour, 255 * showColour, 0));
 						}
@@ -135,7 +140,8 @@ void Game::run(sf::RenderWindow& window)
 				for (int i = 0; i < 19; i++) {
 					for (int j = 0; j < 19; j++) {
 						if (stones[j][i].nrOfStones[showColour][turnCounter] > 0)
-							stones[j][i].stone.setFillColor(sf::Color(255 * showColour, 255 * showColour, 255 * showColour, 255 / (highestStoneCount[showColour][turnCounter] / stones[j][i].nrOfStones[showColour][turnCounter])));
+							//stones[j][i].stone.setFillColor(sf::Color(255 * showColour, 255 * showColour, 255 * showColour, 255 / (highestStoneCount[showColour][turnCounter] / stones[j][i].nrOfStones[showColour][turnCounter])));
+							stones[j][i].stone.setFillColor(sf::Color(255 * showColour, 255 * showColour, 255 * showColour, 255 / (totalNrOfStones[showColour][turnCounter] / stones[j][i].nrOfStones[showColour][turnCounter])));
 						else
 							stones[j][i].stone.setFillColor(sf::Color(255 * showColour, 255 * showColour, 255 * showColour, 0));
 					}
@@ -146,7 +152,8 @@ void Game::run(sf::RenderWindow& window)
 				for (int i = 0; i < 19; i++) {
 					for (int j = 0; j < 19; j++) {
 						if (stones[j][i].nrOfStones[showColour][turnCounter] > 0)
-							stones[j][i].stone.setFillColor(sf::Color(255 * showColour, 255 * showColour, 255 * showColour, 255 / (highestStoneCount[showColour][turnCounter] / stones[j][i].nrOfStones[showColour][turnCounter])));
+							//stones[j][i].stone.setFillColor(sf::Color(255 * showColour, 255 * showColour, 255 * showColour, 255 / (highestStoneCount[showColour][turnCounter] / stones[j][i].nrOfStones[showColour][turnCounter])));
+							stones[j][i].stone.setFillColor(sf::Color(255 * showColour, 255 * showColour, 255 * showColour, 255 / (totalNrOfStones[showColour][turnCounter] / stones[j][i].nrOfStones[showColour][turnCounter])));
 						else
 							stones[j][i].stone.setFillColor(sf::Color(255 * showColour, 255 * showColour, 255 * showColour, 0));
 					}
