@@ -5,23 +5,28 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <direct.h>
 
 struct GoMove
 {
 	bool player;
 	unsigned int horisontal;
 	unsigned int vertical;
+	bool winner;
 };
 
 void ReadGoMatch(const char* path, std::vector<GoMove>* match);
 void ReadDirectory(const char* path, std::vector<std::vector<GoMove>>* match, std::string indentation);
 void PrintToCSV(const char* path, std::vector<std::vector<GoMove>>* matches);
+void PrintAllHeatMaps(const char* folder, std::vector<std::vector<GoMove>>* matches, int nrOfMoves = 0);
+void PrintHeatMapsToCSV(const char* folder, const char* csvFileName, const char* gpFileName, std::vector<std::vector<GoMove>>* matches, bool playerBlack, bool blackWin, int nrOfMoves = 0);
 
 int main()
 {
 	std::vector<std::vector<GoMove>> matches;
 	ReadDirectory("../GoGames/", &matches, "");
 	PrintToCSV("../tmp.csv", &matches);
+	PrintAllHeatMaps("../heatmaps/", &matches, 5);
     sf::RenderWindow window(sf::VideoMode(900, 800), "GO!");
 
 	Game game;
@@ -80,12 +85,21 @@ void ReadGoMatch(const char* path, std::vector<GoMove>* match)
 		std::stringstream ss;
 		char junk;
 		char line[1000];
+		char winner;
 
 		while (!f.eof())
 		{
 			f.getline(line, 1000, ']');
 			ss << line;
 			ss >> junk;
+			if (junk == 'R')
+			{
+				ss >> junk;
+				if (junk == 'E')
+				{
+					ss >> junk >> winner;
+				}
+			}
 			if (junk == ';')
 			{
 				GoMove move;
@@ -101,6 +115,7 @@ void ReadGoMatch(const char* path, std::vector<GoMove>* match)
 				move.horisontal -= 'a';
 				move.vertical = vertical;
 				move.vertical -= 'a';
+				move.winner = winner == 'B' ? true : false;
 
 				match->push_back(move);
 			}
@@ -117,7 +132,7 @@ void PrintToCSV(const char* path, std::vector<std::vector<GoMove>>* matches)
 	if (file.is_open())
 	{
 		file.clear();
-		
+
 		for (auto& match : *matches)
 		{
 			for (auto& move : match)
@@ -127,4 +142,96 @@ void PrintToCSV(const char* path, std::vector<std::vector<GoMove>>* matches)
 			file << std::endl;
 		}
 	}
+}
+
+void PrintAllHeatMaps(const char* folder, std::vector<std::vector<GoMove>>* matches, int nrOfMoves)
+{
+	mkdir(folder);
+
+	PrintHeatMapsToCSV(folder, "BlackWin.csv", "heatmapBlackWin.gp", matches, true, true, nrOfMoves);
+	PrintHeatMapsToCSV(folder, "BlackLose.csv", "heatmapBlackLose.gp", matches, true, false, nrOfMoves);
+	PrintHeatMapsToCSV(folder, "WhiteWin.csv", "heatmapWhiteWin.gp", matches, false, false, nrOfMoves);
+	PrintHeatMapsToCSV(folder, "WhiteLose.csv", "heatmapWhiteLose.gp", matches, false, true, nrOfMoves);
+}
+
+void PrintHeatMapsToCSV(const char* folder, const char* csvFileName, const char* gpFileName, std::vector<std::vector<GoMove>>* matches, bool playerBlack, bool blackWin, int nrOfMoves)
+{
+	std::ofstream csvFile, gpFile;
+
+	char csvPath[64], gpPath[64];
+	strcpy(csvPath, folder);
+	strcat(csvPath, csvFileName);
+	strcpy(gpPath, folder);
+	strcat(gpPath, gpFileName);
+
+	csvFile.open(csvPath, std::ios::out | std::ios::trunc);
+	gpFile.open(gpPath, std::ios::out | std::ios::trunc);
+
+	int stones[19][19];
+
+	for (int i = 0; i < 19; ++i)
+	{
+		for (int j = 0; j < 19; ++j)
+		{
+			stones[i][j] = 0;
+		}
+	}
+
+	int nrMove;
+
+	for (auto& match : *matches)
+	{
+		nrMove = 0;
+		for (auto& move : match)
+		{
+			if (move.player == playerBlack && move.winner == blackWin)
+			{
+				++stones[move.horisontal][move.vertical];
+			}
+
+			++nrMove;
+			if (nrMove == (nrOfMoves * 2))
+			{
+				break;
+			}
+		}
+	}
+
+	int highestAmount = 0;
+	if (csvFile.is_open())
+	{
+		csvFile.clear();
+
+		csvFile << ", A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S" << std::endl;
+
+		for (int j = 1; j <= 19; ++j)
+		{
+			csvFile << j;
+			for (int i = 0; i < 19; ++i)
+			{
+				csvFile << ", " << stones[i][19 - j];
+				if (stones[i][19 - j] > highestAmount)
+				{
+					highestAmount = stones[i][19 - j];
+				}
+			}
+			csvFile << std::endl;
+		}
+	}
+
+	gpFile <<
+		"set terminal wxt size 660, 600" << std::endl <<
+		"set title \"Heat map " << (playerBlack ? "Black " : "White ") << (playerBlack == blackWin ? "win" : "lose") << "\"" << std::endl <<
+		"unset key" << std::endl <<
+		"set tic scale 0" << std::endl <<
+		"set palette defined ( 0 \"white\", 1 \"" << (playerBlack == blackWin ? "green" : "red") << "\")" << std::endl <<
+		"set cbrange [0:" << highestAmount << "]" << std::endl <<
+		"set cblabel \"Number of stones\"" << std::endl <<
+		"unset cbtics" << std::endl <<
+		"set xrange [-0.5:18.5]" << std::endl <<
+		"set yrange [-0.5:18.5]" << std::endl <<
+		"set view map" << std::endl <<
+		"file = \"" << csvFileName << "\"" << std::endl <<
+		"set datafile separator comma" << std::endl <<
+		"plot file matrix rowheaders columnheaders using 1:2:3 with image" << std::endl;
 }
