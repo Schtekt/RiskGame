@@ -233,7 +233,7 @@ void PrintHeatMapsToCSV(const char* folder, const char* csvFileName, const char*
 
 	gpFile <<
 		"set terminal wxt size 660, 600" << std::endl <<
-		"set title \"" << (nrOfMoves == 0 ? "All" : "First " + std::to_string(nrOfMoves)) << " stones placed by " << (playerBlack ? "Black" : "White") << " player during " << nrOfMatches << (playerBlack == blackWin ? " winning" : " losing") << " matches\"" << std::endl <<
+		"set title \"Placement of " << (nrOfMoves == 0 ? "all" : "first " + std::to_string(nrOfMoves)) << " stones placed by " << (playerBlack ? "Black" : "White") << " player during " << nrOfMatches << (playerBlack == blackWin ? " winning" : " losing") << " matches of Go\"" << std::endl <<
 		"unset key" << std::endl <<
 		"set tic scale 0" << std::endl <<
 		"set palette defined ( 0 \"white\", 1 \"" << (playerBlack == blackWin ? "green" : "red") << "\")" << std::endl <<
