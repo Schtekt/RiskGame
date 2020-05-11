@@ -178,15 +178,23 @@ void PrintHeatMapsToCSV(const char* folder, const char* csvFileName, const char*
 	}
 
 	int nrMove;
+	int nrOfMatches = 0;
+	bool addMatch = false;
 
 	for (auto& match : *matches)
 	{
 		nrMove = 0;
+		addMatch = false;
+		if (match.size() <= 1)
+		{
+			continue;
+		}
 		for (auto& move : match)
 		{
 			if (move.player == playerBlack && move.winner == blackWin)
 			{
 				++stones[move.horisontal][move.vertical];
+				addMatch = true;
 			}
 
 			++nrMove;
@@ -194,6 +202,10 @@ void PrintHeatMapsToCSV(const char* folder, const char* csvFileName, const char*
 			{
 				break;
 			}
+		}
+		if (addMatch)
+		{
+			++nrOfMatches;
 		}
 	}
 
@@ -221,7 +233,7 @@ void PrintHeatMapsToCSV(const char* folder, const char* csvFileName, const char*
 
 	gpFile <<
 		"set terminal wxt size 660, 600" << std::endl <<
-		"set title \"Heat map " << (playerBlack ? "Black " : "White ") << (playerBlack == blackWin ? "win" : "lose") << "\"" << std::endl <<
+		"set title \"" << (nrOfMoves == 0 ? "All" : "First " + std::to_string(nrOfMoves)) << " stones placed by " << (playerBlack ? "Black" : "White") << " player during " << nrOfMatches << (playerBlack == blackWin ? " winning" : " losing") << " matches\"" << std::endl <<
 		"unset key" << std::endl <<
 		"set tic scale 0" << std::endl <<
 		"set palette defined ( 0 \"white\", 1 \"" << (playerBlack == blackWin ? "green" : "red") << "\")" << std::endl <<
@@ -230,6 +242,7 @@ void PrintHeatMapsToCSV(const char* folder, const char* csvFileName, const char*
 		"unset cbtics" << std::endl <<
 		"set xrange [-0.5:18.5]" << std::endl <<
 		"set yrange [-0.5:18.5]" << std::endl <<
+		"set grid front linetype - 1" << std::endl <<
 		"set view map" << std::endl <<
 		"file = \"" << csvFileName << "\"" << std::endl <<
 		"set datafile separator comma" << std::endl <<
