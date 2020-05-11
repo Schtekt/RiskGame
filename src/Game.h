@@ -35,6 +35,8 @@ private:
 	sf::Text black;
 	sf::Text white;
 
+	sf::Color interpolateColor(float source, float target, sf::Color sourceColour, sf::Color targetColour);
+	sf::Color getColorHeatMap(float high, float curr);
 public:
 	Game();
 	void addStone(int x, int y, int colour, int turn);
