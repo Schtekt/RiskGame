@@ -53,6 +53,7 @@ int main()
 
     return 0;
 }
+
 void ReadDirectory(const char* path, std::vector<std::vector<GoMove>>* match, std::string indentation)
 {
 	std::filesystem::path p(path);
@@ -214,7 +215,7 @@ void PrintHeatMapsToCSV(const char* folder, const char* csvFileName, const char*
 	{
 		csvFile.clear();
 
-		csvFile << ", A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S" << std::endl;
+		csvFile << ", A, B, C, D, E, F, G, H, J, K, L, M, N, O, P, Q, R, S, T" << std::endl;
 
 		for (int j = 1; j <= 19; ++j)
 		{
@@ -247,4 +248,71 @@ void PrintHeatMapsToCSV(const char* folder, const char* csvFileName, const char*
 		"file = \"" << csvFileName << "\"" << std::endl <<
 		"set datafile separator comma" << std::endl <<
 		"plot file matrix rowheaders columnheaders using 1:2:3 with image" << std::endl;
+}
+
+void PrintQuadrantBarsToCSV(const char* folder, const char* csvFileName, const char* gpFileName, std::vector<std::vector<GoMove>>* matches, bool playerBlack, bool blackWin, int nrOfMoves)
+{
+	std::ofstream csvFile, gpFile;
+
+	char csvPath[64], gpPath[64];
+	strcpy(csvPath, folder);
+	strcat(csvPath, csvFileName);
+	strcpy(gpPath, folder);
+	strcat(gpPath, gpFileName);
+
+	csvFile.open(csvPath, std::ios::out | std::ios::trunc);
+	gpFile.open(gpPath, std::ios::out | std::ios::trunc);
+
+	int quadrants[4] = { 0 };
+
+	int nrMove;
+	int nrOfMatches = 0;
+	bool addMatch;
+	for (auto& match : *matches)
+	{
+		nrMove = 0;
+		addMatch = false;
+		if (match.size() <= 1)
+		{
+			continue;
+		}
+		for (auto& move : match)
+		{
+			if (move.player == playerBlack && move.winner == blackWin)
+			{
+				int hor = move.horisontal / 10;
+				int vert = move.vertical / 10;
+				quadrants[hor + vert *2]++;
+				addMatch = true;
+			}
+
+			++nrMove;
+			if (nrMove == (nrOfMoves * 2))
+			{
+				break;
+			}
+		}
+		if (addMatch)
+		{
+			++nrOfMatches;
+		}
+	}
+
+	if (csvFile.is_open())
+	{
+		csvFile.clear();
+
+		csvFile << ", Top Left, Top Right, Bottom Left, Bottom Right" << std::endl;
+
+		for (int j = 1; j <= 19; ++j)
+		{
+			csvFile << j;
+			for (int i = 0; i < 4; ++i)
+			{
+				csvFile << ", " << quadrants[i];
+			}
+			csvFile << std::endl;
+		}
+	}
+
 }
