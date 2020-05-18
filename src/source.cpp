@@ -21,7 +21,8 @@ void PrintToCSV(const char* path, std::vector<std::vector<GoMove>>* matches);
 void PrintAllHeatMaps(const char* folder, std::vector<std::vector<GoMove>>* matches, int nrOfMoves = 0);
 void PrintHeatMapsToCSV(const char* folder, const char* csvFileName, const char* gpFileName, std::vector<std::vector<GoMove>>* matches, bool playerBlack, bool blackWin, int nrOfMoves = 0);
 void PrintAllQuadrantBars(const char* folder, std::vector<std::vector<GoMove>>* matches, int nrOfMoves = 0);
-void PrintQuadrantBarsToCSV(const char* folder, const char* csvFileName, const char* gpFileName, std::vector<std::vector<GoMove>>* matches, bool playerBlack, bool blackWin, int nrOfMoves = 0);
+int PrintQuadrantBarsToCSV(const char* folder, const char* csvFileName, std::vector<std::vector<GoMove>>* matches, bool playerBlack, bool blackWin, int nrOfMoves = 0);
+void PrintHistogramGP(const char* folder, const char* csvFileName1, const char* csvFileName2, const char* gpFileName, bool playerBlack, int nrOfMoves, int nrOfMatches);
 
 int main()
 {
@@ -162,10 +163,14 @@ void PrintAllQuadrantBars(const char* folder, std::vector<std::vector<GoMove>>* 
 {
 	mkdir(folder);
 
-	PrintQuadrantBarsToCSV(folder, "BlackWin.csv", "BarsBlackWin.gp", matches, true, true, nrOfMoves);
-	PrintQuadrantBarsToCSV(folder, "BlackLose.csv", "BarsBlackLose.gp", matches, true, false, nrOfMoves);
-	PrintQuadrantBarsToCSV(folder, "WhiteWin.csv", "BarsWhiteWin.gp", matches, false, false, nrOfMoves);
-	PrintQuadrantBarsToCSV(folder, "WhiteLose.csv", "BarsWhiteLose.gp", matches, false, true, nrOfMoves);
+	int nrOfMatches;
+
+	nrOfMatches = PrintQuadrantBarsToCSV(folder, "BlackWin.csv", matches, true, true, nrOfMoves);
+	nrOfMatches += PrintQuadrantBarsToCSV(folder, "BlackLose.csv", matches, true, false, nrOfMoves);
+	PrintQuadrantBarsToCSV(folder, "WhiteWin.csv", matches, false, false, nrOfMoves);
+	PrintQuadrantBarsToCSV(folder, "WhiteLose.csv", matches, false, true, nrOfMoves);
+	PrintHistogramGP(folder, "BlackWin.csv", "BlackLose.csv", "HistogramBlack.gp", true, nrOfMoves, nrOfMatches);
+	PrintHistogramGP(folder, "WhiteWin.csv", "WhiteLose.csv", "HistogramWhite.gp", false, nrOfMoves, nrOfMatches);
 }
 
 void PrintHeatMapsToCSV(const char* folder, const char* csvFileName, const char* gpFileName, std::vector<std::vector<GoMove>>* matches, bool playerBlack, bool blackWin, int nrOfMoves)
@@ -263,18 +268,15 @@ void PrintHeatMapsToCSV(const char* folder, const char* csvFileName, const char*
 		"plot file matrix rowheaders columnheaders using 1:2:3 with image" << std::endl;
 }
 
-void PrintQuadrantBarsToCSV(const char* folder, const char* csvFileName, const char* gpFileName, std::vector<std::vector<GoMove>>* matches, bool playerBlack, bool blackWin, int nrOfMoves)
+int PrintQuadrantBarsToCSV(const char* folder, const char* csvFileName, std::vector<std::vector<GoMove>>* matches, bool playerBlack, bool blackWin, int nrOfMoves)
 {
-	std::ofstream csvFile, gpFile;
+	std::ofstream csvFile;
 
-	char csvPath[64], gpPath[64];
+	char csvPath[64];
 	strcpy(csvPath, folder);
 	strcat(csvPath, csvFileName);
-	strcpy(gpPath, folder);
-	strcat(gpPath, gpFileName);
 
 	csvFile.open(csvPath, std::ios::out | std::ios::trunc);
-	gpFile.open(gpPath, std::ios::out | std::ios::trunc);
 
 	int quadrants[4] = { 0 };
 	std::string quadtrantNames[] = { "Top Left", "Top Right", "Bottom Left", "Bottom Right" };
@@ -322,4 +324,36 @@ void PrintQuadrantBarsToCSV(const char* folder, const char* csvFileName, const c
 		}
 	}
 
+	return nrOfMatches;
+}
+
+void PrintHistogramGP(const char * folder, const char * csvFileName1, const char * csvFileName2, const char * gpFileName, bool playerBlack, int nrOfMoves, int nrOfMatches)
+{
+	std::ofstream gpFile;
+
+	char gpPath[64];
+	strcpy(gpPath, folder);
+	strcat(gpPath, gpFileName);
+
+	gpFile.open(gpPath, std::ios::out | std::ios::trunc);
+
+	gpFile <<
+		"set terminal wxt size 1200, 600 background rgb \'#202030\'" << std::endl <<
+		"set xrange[-0.5:3.5]" << std::endl <<
+		"set yrange[0:350]" << std::endl <<
+		"set title \"Number of stones placed in each quadrant during " << (nrOfMoves == 0 ? "all" : "the first " + std::to_string(nrOfMoves)) << " moves of "<< nrOfMatches << " games of Go by " << (playerBlack ? "Black" : "White") << " player\" font \",16\" tc \"white\"" << std::endl <<
+		"set xlabel \"Quadrant\" tc \"white\"" << std::endl <<
+		"set ylabel \"Stones\" tc \"white\"" << std::endl <<
+		"set xtic 1 tc \"white\"" << std::endl <<
+		"set ytic 10 tc \"white\"" << std::endl <<
+		"set grid lc \"white\"" << std::endl <<
+		"set boxwidth 0.5" << std::endl <<
+		"set key tc \"white\"" << std::endl <<
+		"fileWin = \"" << csvFileName1 << "\"" << std::endl <<
+		"fileLose = \"" << csvFileName2 << "\"" << std::endl <<
+		"set datafile separator comma" << std::endl <<
+		"set style data histogram" << std::endl <<
+		"set style histogram cluster" << std::endl <<
+		"set style fill solid 0.5" << std::endl <<
+		"plot fileWin using 2:xtic(1) title \"Stones placed during winning game\" lc \"green\", fileLose using 2 title \"Stones placed during losing game\" lc \"red\"" << std::endl;
 }
