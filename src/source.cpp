@@ -20,6 +20,8 @@ void ReadDirectory(const char* path, std::vector<std::vector<GoMove>>* match, st
 void PrintToCSV(const char* path, std::vector<std::vector<GoMove>>* matches);
 void PrintAllHeatMaps(const char* folder, std::vector<std::vector<GoMove>>* matches, int nrOfMoves = 0);
 void PrintHeatMapsToCSV(const char* folder, const char* csvFileName, const char* gpFileName, std::vector<std::vector<GoMove>>* matches, bool playerBlack, bool blackWin, int nrOfMoves = 0);
+void PrintAllQuadrantBars(const char* folder, std::vector<std::vector<GoMove>>* matches, int nrOfMoves = 0);
+void PrintQuadrantBarsToCSV(const char* folder, const char* csvFileName, const char* gpFileName, std::vector<std::vector<GoMove>>* matches, bool playerBlack, bool blackWin, int nrOfMoves = 0);
 
 int main()
 {
@@ -27,6 +29,7 @@ int main()
 	ReadDirectory("../GoGames/", &matches, "");
 	PrintToCSV("../tmp.csv", &matches);
 	PrintAllHeatMaps("../heatmaps/", &matches, 5);
+	PrintAllQuadrantBars("../BarGraphs/", &matches, 5);
     sf::RenderWindow window(sf::VideoMode(900, 800), "GO!");
 
 	Game game;
@@ -153,6 +156,16 @@ void PrintAllHeatMaps(const char* folder, std::vector<std::vector<GoMove>>* matc
 	PrintHeatMapsToCSV(folder, "BlackLose.csv", "heatmapBlackLose.gp", matches, true, false, nrOfMoves);
 	PrintHeatMapsToCSV(folder, "WhiteWin.csv", "heatmapWhiteWin.gp", matches, false, false, nrOfMoves);
 	PrintHeatMapsToCSV(folder, "WhiteLose.csv", "heatmapWhiteLose.gp", matches, false, true, nrOfMoves);
+}
+
+void PrintAllQuadrantBars(const char* folder, std::vector<std::vector<GoMove>>* matches, int nrOfMoves)
+{
+	mkdir(folder);
+
+	PrintQuadrantBarsToCSV(folder, "BlackWin.csv", "BarsBlackWin.gp", matches, true, true, nrOfMoves);
+	PrintQuadrantBarsToCSV(folder, "BlackLose.csv", "BarsBlackLose.gp", matches, true, false, nrOfMoves);
+	PrintQuadrantBarsToCSV(folder, "WhiteWin.csv", "BarsWhiteWin.gp", matches, false, false, nrOfMoves);
+	PrintQuadrantBarsToCSV(folder, "WhiteLose.csv", "BarsWhiteLose.gp", matches, false, true, nrOfMoves);
 }
 
 void PrintHeatMapsToCSV(const char* folder, const char* csvFileName, const char* gpFileName, std::vector<std::vector<GoMove>>* matches, bool playerBlack, bool blackWin, int nrOfMoves)
