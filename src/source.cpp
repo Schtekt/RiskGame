@@ -277,7 +277,7 @@ void PrintQuadrantBarsToCSV(const char* folder, const char* csvFileName, const c
 	gpFile.open(gpPath, std::ios::out | std::ios::trunc);
 
 	int quadrants[4] = { 0 };
-
+	std::string quadtrantNames[] = { "Top Left", "Top Right", "Bottom Left", "Bottom Right" };
 	int nrMove;
 	int nrOfMatches = 0;
 	bool addMatch;
@@ -315,16 +315,10 @@ void PrintQuadrantBarsToCSV(const char* folder, const char* csvFileName, const c
 	{
 		csvFile.clear();
 
-		csvFile << ", Top Left, Top Right, Bottom Left, Bottom Right" << std::endl;
-
-		for (int j = 1; j <= 19; ++j)
+		//csvFile << ", Top Left, Top Right, Bottom Left, Bottom Right" << std::endl;
+		for (int i = 0; i < 4; ++i)
 		{
-			csvFile << j;
-			for (int i = 0; i < 4; ++i)
-			{
-				csvFile << ", " << quadrants[i];
-			}
-			csvFile << std::endl;
+			csvFile << quadtrantNames[i] << ", " << quadrants[i] << std::endl;
 		}
 	}
 
