@@ -14,6 +14,11 @@ struct GoMove
 	unsigned int vertical;
 	bool winner;
 };
+struct node
+{
+	int movesMadeOnThis;
+	std::vector<node> nextMoves;
+};
 
 void ReadGoMatch(const char* path, std::vector<GoMove>* match);
 void ReadDirectory(const char* path, std::vector<std::vector<GoMove>>* match, std::string indentation);
@@ -26,6 +31,7 @@ void PrintHistogramGP(const char* folder, const char* csvFileName1, const char* 
 void PrintAllMovesInQuadrants(const char* folder, std::vector<std::vector<GoMove>>* matches, int nrOfMoves = 0);
 int PrintMovesInQuadrantsToCSV(const char* folder, const char* csvFileName, std::vector<std::vector<GoMove>>* matches, bool playerBlack, bool blackWin, int nrOfMoves);
 void PrintTreeGP(const char* folder, const char* csvFileName, const char* gpFileName, bool playerBlack, bool blackWin, std::vector<std::vector<GoMove>>* matches, int nrOfMoves, int nrOfMatches);
+void PrintTreeDOT(const char* folder, const char* dotFileName, node* root);
 
 int main()
 {
@@ -377,12 +383,6 @@ void PrintAllMovesInQuadrants(const char* folder, std::vector<std::vector<GoMove
 
 }
 
-struct node
-{
-	int movesMadeOnThis;
-	std::vector<node> nextMoves;
-};
-
 void initMoves(node* move, int currLevel, int maxLevel)
 {
 	for (int i = 0; i < 4; i++)
@@ -405,12 +405,12 @@ void printMoves(node* move, int currLevel, int maxLevel, std::stringstream* ss, 
 {
 	if (currLevel++ < maxLevel)
 	{
-		*ss << xPos << "," << currLevel * 30 << "," <<  move->movesMadeOnThis << std::endl;
+		*ss << xPos << "," << (5*30 - currLevel * 30) << "," <<  move->movesMadeOnThis << std::endl;
 
 		int size = move->nextMoves.size();
 		for (int i = 0; i < size; i++)
 		{
-			printMoves(&move->nextMoves[i], currLevel, maxLevel, ss, (xPos / size) * (i * 2 + 1));
+			printMoves(&move->nextMoves[i], currLevel, maxLevel, ss, xPos + (4098 / (pow(currLevel, maxLevel - 1))) * (i - 1.5));
 		}
 	}
 
@@ -457,14 +457,19 @@ int PrintMovesInQuadrantsToCSV(const char* folder, const char* csvFileName, std:
 			nrOfMatches++;
 	}
 
-	// Assuming we ONLY make 5 moves, the last row will hold 1024 points...
+	std::string dotFileName = csvFileName;
+	dotFileName = dotFileName.substr(0,dotFileName.find(".", 0));
+	dotFileName += ".dot";
 
+	PrintTreeDOT(folder, dotFileName.c_str(), &root);
+
+	// Assuming we ONLY make 5 moves, the last row will hold 1024 points...
 	if (csvFile.is_open())
 	{
 		std::stringstream ss;
 		// middle, where the root is will be 1024 / 2 = 512
 		for (int i = 0; i < 4; i++)
-			printMoves(&root.nextMoves[i], 0, nrOfMoves, &ss, (1024 / 4) * (i * 2 + 1));
+			printMoves(&root.nextMoves[i], 0, nrOfMoves, &ss, 16392*i);
 
 		csvFile << ss.rdbuf();
 	}
@@ -492,5 +497,89 @@ void PrintTreeGP(const char* folder, const char* csvFileName, const char* gpFile
 		"set ytic 10 tc \"white\"" << std::endl <<
 		"file = \"" << csvFileName << "\"" << std::endl <<
 		"set datafile separator comma" << std::endl <<
-		"plot file using 1:2:3 with points lt 1 pt 100 ps variable" << std::endl;
+		"plot file using 1:2:3 with points lt 1 pt 6 ps 3" << std::endl;
+}
+
+void PrintTreeDOTHelper(std::stringstream* ss, node* parent, const char* parentName)
+{
+	if (parent->nextMoves.size() > 0)
+	{
+		if ((parent->nextMoves[0].movesMadeOnThis > 0) || (parent->nextMoves[1].movesMadeOnThis > 0) || (parent->nextMoves[2].movesMadeOnThis > 0) || (parent->nextMoves[3].movesMadeOnThis > 0))
+		{
+			*ss << parentName << " -> {";
+
+			for (int i = 0; i < parent->nextMoves.size() - 1; i++)
+			{
+				if (parent->nextMoves[i].movesMadeOnThis > 0)
+				{
+					*ss << parentName << (char)('A' + i) << "; ";
+				}
+			}
+			if (parent->nextMoves[parent->nextMoves.size() - 1].movesMadeOnThis > 0)
+			{
+				*ss << parentName << (char)('A' + parent->nextMoves.size() - 1);
+			}
+			*ss << "}" << std::endl;
+
+			for (int i = 0; i < parent->nextMoves.size(); i++)
+			{
+				if (parent->nextMoves[i].movesMadeOnThis > 0)
+				{
+					*ss << parentName << (char)('A' + i) << "[ label = " << parent->nextMoves[i].movesMadeOnThis << ", color = ";
+					
+						switch (i)
+						{
+							// top left
+						case 0:
+							*ss << "red";
+							break;
+							// top right
+						case 1:
+							*ss << "green";
+							break;
+							// bot left
+						case 2:
+							*ss << "blue";
+							break;
+							// bot right
+						case 3:
+							*ss << "yellow";
+							break;
+						}
+					*ss << "];" << std::endl;
+				}
+			}
+
+			std::string tst = parentName;
+			for (int i = 0; i < parent->nextMoves.size(); i++)
+			{
+				PrintTreeDOTHelper(ss, &parent->nextMoves[i], (tst + (char)('A' + i)).c_str());
+			}
+		}
+	}
+}
+
+void PrintTreeDOT(const char* folder, const char* dotFileName, node* root)
+{
+	std::ofstream dotFile;
+
+	char dotPath[64];
+	strcpy(dotPath, folder);
+	strcat(dotPath, dotFileName);
+
+	dotFile.open(dotPath, std::ios::out | std::ios::trunc);
+
+	if (dotFile.is_open())
+	{
+		dotFile <<
+			"digraph sample {" << std::endl;
+		std::stringstream ss;
+
+		PrintTreeDOTHelper(&ss, root, "S");
+
+		dotFile << ss.rdbuf();
+
+		dotFile << "}";
+
+	}
 }
