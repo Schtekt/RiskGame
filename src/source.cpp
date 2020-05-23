@@ -23,6 +23,9 @@ void PrintHeatMapsToCSV(const char* folder, const char* csvFileName, const char*
 void PrintAllQuadrantBars(const char* folder, std::vector<std::vector<GoMove>>* matches, int nrOfMoves = 0);
 int PrintQuadrantBarsToCSV(const char* folder, const char* csvFileName, std::vector<std::vector<GoMove>>* matches, bool playerBlack, bool blackWin, int nrOfMoves = 0);
 void PrintHistogramGP(const char* folder, const char* csvFileName1, const char* csvFileName2, const char* gpFileName, bool playerBlack, int nrOfMoves, int nrOfMatches);
+void PrintAllMovesInQuadrants(const char* folder, std::vector<std::vector<GoMove>>* matches, int nrOfMoves = 0);
+int PrintMovesInQuadrantsToCSV(const char* folder, const char* csvFileName, std::vector<std::vector<GoMove>>* matches, bool playerBlack, bool blackWin, int nrOfMoves);
+void PrintTreeGP(const char* folder, const char* csvFileName, const char* gpFileName, bool playerBlack, bool blackWin, std::vector<std::vector<GoMove>>* matches, int nrOfMoves, int nrOfMatches);
 
 int main()
 {
@@ -31,10 +34,11 @@ int main()
 	PrintToCSV("../tmp.csv", &matches);
 	PrintAllHeatMaps("../heatmaps/", &matches, 5);
 	PrintAllQuadrantBars("../BarGraphs/", &matches, 5);
+	PrintAllMovesInQuadrants("../Tree/", &matches, 5);
     sf::RenderWindow window(sf::VideoMode(900, 800), "GO!");
 
 	Game game;
-	for (unsigned int i = 0; i < 10; i++)
+	for (unsigned int i = 0; i < 1; i++)
 	{
 		for (const auto& match : matches)
 		{
@@ -356,4 +360,137 @@ void PrintHistogramGP(const char * folder, const char * csvFileName1, const char
 		"set style histogram cluster" << std::endl <<
 		"set style fill solid 0.5" << std::endl <<
 		"plot fileWin using 2:xtic(1) title \"Stones placed during winning game\" lc \"green\", fileLose using 2 title \"Stones placed during losing game\" lc \"red\"" << std::endl;
+}
+
+void PrintAllMovesInQuadrants(const char* folder, std::vector<std::vector<GoMove>>* matches, int nrOfMoves)
+{
+	mkdir(folder);
+
+	int nrOfMatches;
+
+	nrOfMatches = PrintMovesInQuadrantsToCSV(folder, "BlackWin.csv", matches, true, true, nrOfMoves);
+	nrOfMatches += PrintMovesInQuadrantsToCSV(folder, "BlackLose.csv", matches, true, false, nrOfMoves);
+	PrintMovesInQuadrantsToCSV(folder, "WhiteWin.csv", matches, false, false, nrOfMoves);
+	PrintMovesInQuadrantsToCSV(folder, "WhiteLose.csv", matches, false, true, nrOfMoves);
+
+	PrintTreeGP(folder, "BlackWin.csv", "BlackWin.gp", true, true, matches, nrOfMoves, nrOfMatches);
+
+}
+
+struct node
+{
+	int movesMadeOnThis;
+	std::vector<node> nextMoves;
+};
+
+void initMoves(node* move, int currLevel, int maxLevel)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		node nextMove;
+		nextMove.movesMadeOnThis = 0;
+		move->nextMoves.push_back(nextMove);
+	}
+
+	if (currLevel++ < maxLevel)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			initMoves(&move->nextMoves[i], currLevel, maxLevel);
+		}
+	}
+}
+
+void printMoves(node* move, int currLevel, int maxLevel, std::stringstream* ss, int xPos)
+{
+	if (currLevel++ < maxLevel)
+	{
+		*ss << xPos << "," << currLevel * 10 << "," <<  move->movesMadeOnThis << std::endl;
+
+		int size = move->nextMoves.size();
+		for (int i = 0; i < size; i++)
+		{
+			printMoves(&move->nextMoves[i], currLevel, maxLevel, ss, (xPos / size) * (i * 2 + 1));
+		}
+	}
+
+}
+
+int PrintMovesInQuadrantsToCSV(const char* folder, const char* csvFileName, std::vector<std::vector<GoMove>>* matches, bool playerBlack, bool blackWin, int nrOfMoves)
+{
+	std::ofstream csvFile;
+
+	char csvPath[64];
+	strcpy(csvPath, folder);
+	strcat(csvPath, csvFileName);
+
+	bool addMatch;
+	int nrMove = 0;
+	int nrOfMatches = 0;
+	csvFile.open(csvPath, std::ios::out | std::ios::trunc);
+
+	node root;
+	initMoves(&root, 0, nrOfMoves);
+
+	node* pMove;
+	for (auto& match : *matches)
+	{
+		pMove = &root;
+		nrMove = 0;
+		addMatch = false;
+		for (auto move : match)
+		{
+			if (move.player == playerBlack && move.winner == blackWin)
+			{
+				int hor = move.horisontal / 10;
+				int vert = move.vertical / 10;
+
+				pMove = &pMove->nextMoves[hor + vert * 2];
+				pMove->movesMadeOnThis++;
+				addMatch = true;
+			}
+			nrMove++;
+			if (nrMove >= nrOfMoves * 2)
+				break;
+		}
+		if (addMatch)
+			nrOfMatches++;
+	}
+
+	// Assuming we ONLY make 5 moves, the last row will hold 1024 points...
+
+	if (csvFile.is_open())
+	{
+		std::stringstream ss;
+		// middle, where the root is will be 1024 / 2 = 512
+		for (int i = 0; i < 4; i++)
+			printMoves(&root.nextMoves[i], 0, nrOfMoves, &ss, (1024 / 4) * (i * 2 + 1));
+
+		csvFile << ss.rdbuf();
+	}
+	return nrOfMatches;
+}
+
+void PrintTreeGP(const char* folder, const char* csvFileName, const char* gpFileName, bool playerBlack, bool blackWin, std::vector<std::vector<GoMove>>* matches, int nrOfMoves, int nrOfMatches)
+{
+	std::ofstream gpFile;
+
+	char gpPath[64];
+	strcpy(gpPath, folder);
+	strcat(gpPath, gpFileName);
+
+	gpFile.open(gpPath, std::ios::out | std::ios::trunc);
+
+	gpFile <<
+		"set terminal wxt size 1200, 600 background rgb \'#202030\'" << std::endl <<
+		"set xrange[-0.5:3.5]" << std::endl <<
+		"set yrange[0:350]" << std::endl <<
+		"set title \"Number of stones placed in each quadrant during " << (nrOfMoves == 0 ? "all" : "the first " + std::to_string(nrOfMoves)) << " moves of " << nrOfMatches << " games of Go by " << (playerBlack ? "Black" : "White") << " player\" font \",16\" tc \"white\"" << std::endl <<
+		"set xlabel \"Quadrant\" tc \"white\"" << std::endl <<
+		"set ylabel \"Stones\" tc \"white\"" << std::endl <<
+		"set xtic 1 tc \"white\"" << std::endl <<
+		"set ytic 10 tc \"white\"" << std::endl <<
+		"file = \"" << csvFileName << "\"" << std::endl <<
+		"set datafile separator comma" << std::endl <<
+		"plot file using 1:2:3 with points lt 1 pt 100 ps variable" << std::endl;
 }
