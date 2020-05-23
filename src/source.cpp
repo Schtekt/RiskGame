@@ -405,7 +405,7 @@ void printMoves(node* move, int currLevel, int maxLevel, std::stringstream* ss, 
 {
 	if (currLevel++ < maxLevel)
 	{
-		*ss << xPos << "," << currLevel * 10 << "," <<  move->movesMadeOnThis << std::endl;
+		*ss << xPos << "," << currLevel * 30 << "," <<  move->movesMadeOnThis << std::endl;
 
 		int size = move->nextMoves.size();
 		for (int i = 0; i < size; i++)
@@ -483,8 +483,8 @@ void PrintTreeGP(const char* folder, const char* csvFileName, const char* gpFile
 
 	gpFile <<
 		"set terminal wxt size 1200, 600 background rgb \'#202030\'" << std::endl <<
-		"set xrange[-0.5:3.5]" << std::endl <<
-		"set yrange[0:350]" << std::endl <<
+		"set xrange[0:2048]" << std::endl <<
+		"set yrange[0:200]" << std::endl <<
 		"set title \"Number of stones placed in each quadrant during " << (nrOfMoves == 0 ? "all" : "the first " + std::to_string(nrOfMoves)) << " moves of " << nrOfMatches << " games of Go by " << (playerBlack ? "Black" : "White") << " player\" font \",16\" tc \"white\"" << std::endl <<
 		"set xlabel \"Quadrant\" tc \"white\"" << std::endl <<
 		"set ylabel \"Stones\" tc \"white\"" << std::endl <<
