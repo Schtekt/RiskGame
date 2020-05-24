@@ -534,7 +534,7 @@ void PrintTreeDOTHelper(std::stringstream* ss, node* parent, const char* parentN
 						break;
 						// bot right
 					case 3:
-						*ss << "BR, color = yellow]" << std::endl;
+						*ss << "BR, color = orange]" << std::endl;
 						break;
 					}
 				}
@@ -545,7 +545,7 @@ void PrintTreeDOTHelper(std::stringstream* ss, node* parent, const char* parentN
 			{
 				if (parent->nextMoves[i].movesMadeOnThis > 0)
 				{
-					*ss << parentName << (char)('A' + i) << "[ label = " << parent->nextMoves[i].movesMadeOnThis << ", color = ";
+					*ss << parentName << (char)('A' + i) << "[ label = " << parent->nextMoves[i].movesMadeOnThis << ", width = " << parent->nextMoves[i].movesMadeOnThis/10 << ", height = " << parent->nextMoves[i].movesMadeOnThis/10 << ", style = filled, fillcolor = ";
 					
 						switch (i)
 						{
@@ -563,7 +563,7 @@ void PrintTreeDOTHelper(std::stringstream* ss, node* parent, const char* parentN
 							break;
 							// bot right
 						case 3:
-							*ss << "yellow";
+							*ss << "orange";
 							break;
 						}
 					*ss << "];" << std::endl;
