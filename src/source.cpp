@@ -381,6 +381,11 @@ void PrintAllMovesInQuadrants(const char* folder, std::vector<std::vector<GoMove
 
 	PrintTreeGP(folder, "BlackWin.csv", "BlackWin.gp", true, true, matches, nrOfMoves, nrOfMatches);
 
+	system("dot -Tsvg ..\\Tree\\BlackWin.dot -o..\\Tree\\BlackWin.svg");
+	system("dot -Tsvg ..\\Tree\\BlackLose.dot -o..\\Tree\\BlackLose.svg");
+	system("dot -Tsvg ..\\Tree\\WhiteWin.dot -o..\\Tree\\WhiteWin.svg");
+	system("dot -Tsvg ..\\Tree\\WhiteLose.dot -o..\\Tree\\WhiteLose.svg");
+
 }
 
 void initMoves(node* move, int currLevel, int maxLevel)
@@ -506,20 +511,35 @@ void PrintTreeDOTHelper(std::stringstream* ss, node* parent, const char* parentN
 	{
 		if ((parent->nextMoves[0].movesMadeOnThis > 0) || (parent->nextMoves[1].movesMadeOnThis > 0) || (parent->nextMoves[2].movesMadeOnThis > 0) || (parent->nextMoves[3].movesMadeOnThis > 0))
 		{
-			*ss << parentName << " -> {";
+			//*ss << parentName << " -> {";
 
-			for (int i = 0; i < parent->nextMoves.size() - 1; i++)
+			for (int i = 0; i < parent->nextMoves.size(); i++)
 			{
 				if (parent->nextMoves[i].movesMadeOnThis > 0)
 				{
-					*ss << parentName << (char)('A' + i) << "; ";
+					*ss << parentName << " -> " << parentName << (char)('A' + i) << "[label = ";
+					switch (i)
+					{
+						// top left
+					case 0:
+						*ss << "TL, color = red]" << std::endl;
+						break;
+						// top right
+					case 1:
+						*ss << "TR, color = green]" << std::endl;
+						break;
+						// bot left
+					case 2:
+						*ss << "BL, color = blue]" << std::endl;
+						break;
+						// bot right
+					case 3:
+						*ss << "BR, color = yellow]" << std::endl;
+						break;
+					}
 				}
 			}
-			if (parent->nextMoves[parent->nextMoves.size() - 1].movesMadeOnThis > 0)
-			{
-				*ss << parentName << (char)('A' + parent->nextMoves.size() - 1);
-			}
-			*ss << "}" << std::endl;
+
 
 			for (int i = 0; i < parent->nextMoves.size(); i++)
 			{
@@ -576,8 +596,8 @@ void PrintTreeDOT(const char* folder, const char* dotFileName, node* root)
 		std::stringstream ss;
 
 		PrintTreeDOTHelper(&ss, root, "S");
-
 		dotFile << ss.rdbuf();
+		dotFile << "S [label = \"Start\"]" << std::endl;
 
 		dotFile << "}";
 
