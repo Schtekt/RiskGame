@@ -348,17 +348,17 @@ void PrintHistogramGP(const char * folder, const char * csvFileName1, const char
 	gpFile.open(gpPath, std::ios::out | std::ios::trunc);
 
 	gpFile <<
-		"set terminal wxt size 1200, 600 background rgb \'#202030\'" << std::endl <<
+		"set terminal wxt size 1200, 600" << std::endl <<
 		"set xrange[-0.5:3.5]" << std::endl <<
 		"set yrange[0:350]" << std::endl <<
-		"set title \"Number of stones placed in each quadrant during " << (nrOfMoves == 0 ? "all" : "the first " + std::to_string(nrOfMoves)) << " moves of "<< nrOfMatches << " games of Go by " << (playerBlack ? "Black" : "White") << " player\" font \",16\" tc \"white\"" << std::endl <<
-		"set xlabel \"Quadrant\" tc \"white\"" << std::endl <<
-		"set ylabel \"Stones\" tc \"white\"" << std::endl <<
-		"set xtic 1 tc \"white\"" << std::endl <<
-		"set ytic 10 tc \"white\"" << std::endl <<
-		"set grid lc \"white\"" << std::endl <<
+		"set title \"Number of stones placed in each quadrant during " << (nrOfMoves == 0 ? "all" : "the first " + std::to_string(nrOfMoves)) << " moves of "<< nrOfMatches << " games of Go by " << (playerBlack ? "Black" : "White") << " player\" font \",16\"" << std::endl <<
+		"set xlabel \"Quadrant\"" << std::endl <<
+		"set ylabel \"Stones\"" << std::endl <<
+		"set xtic 1" << std::endl <<
+		"set ytic 10" << std::endl <<
+		"set grid" << std::endl <<
 		"set boxwidth 0.5" << std::endl <<
-		"set key tc \"white\"" << std::endl <<
+		"set key" << std::endl <<
 		"fileWin = \"" << csvFileName1 << "\"" << std::endl <<
 		"fileLose = \"" << csvFileName2 << "\"" << std::endl <<
 		"set datafile separator comma" << std::endl <<
@@ -381,10 +381,10 @@ void PrintAllMovesInQuadrants(const char* folder, std::vector<std::vector<GoMove
 
 	PrintTreeGP(folder, "BlackWin.csv", "BlackWin.gp", true, true, matches, nrOfMoves, nrOfMatches);
 
-	system("dot -Tsvg ..\\Tree\\BlackWin.dot -o..\\Tree\\BlackWin.svg");
-	system("dot -Tsvg ..\\Tree\\BlackLose.dot -o..\\Tree\\BlackLose.svg");
-	system("dot -Tsvg ..\\Tree\\WhiteWin.dot -o..\\Tree\\WhiteWin.svg");
-	system("dot -Tsvg ..\\Tree\\WhiteLose.dot -o..\\Tree\\WhiteLose.svg");
+	system("dot -Tpng ..\\Tree\\BlackWin.dot -o..\\Tree\\BlackWin.png");
+	system("dot -Tpng ..\\Tree\\BlackLose.dot -o..\\Tree\\BlackLose.png");
+	system("dot -Tpng ..\\Tree\\WhiteWin.dot -o..\\Tree\\WhiteWin.png");
+	system("dot -Tpng ..\\Tree\\WhiteLose.dot -o..\\Tree\\WhiteLose.png");
 
 }
 
