@@ -264,8 +264,12 @@ void PrintHeatMapsToCSV(const char* folder, const char* csvFileName, const char*
 		"set terminal wxt size 660, 600" << std::endl <<
 		"set title \"Placement of " << (nrOfMoves == 0 ? "all" : "first " + std::to_string(nrOfMoves)) << " stones placed by " << (playerBlack ? "Black" : "White") << " player during " << nrOfMatches << (playerBlack == blackWin ? " winning" : " losing") << " matches of Go\"" << std::endl <<
 		"unset key" << std::endl <<
+		"set urange[5:35] noreverse nowriteback" << std::endl <<
+		"set vrange[5:35] noreverse nowriteback" << std::endl <<
+		"set colorbox user size .03, .6 noborder" << std::endl <<
+		"set cbtics scale 0" << std::endl <<
 		"set tic scale 0" << std::endl <<
-		"set palette defined ( 0 \"white\", 1 \"" << (playerBlack == blackWin ? "green" : "red") << "\")" << std::endl <<
+		"set palette defined ( 0 \"#EBE7E0\", 0.2 \"#C6D4E1\", 1 \"#44749D\")" << std::endl <<
 		"set cbrange [0:" << highestAmount << "]" << std::endl <<
 		"set cblabel \"Number of stones\"" << std::endl <<
 		"unset cbtics" << std::endl <<
@@ -365,7 +369,32 @@ void PrintHistogramGP(const char * folder, const char * csvFileName1, const char
 		"set style data histogram" << std::endl <<
 		"set style histogram cluster" << std::endl <<
 		"set style fill solid 0.5" << std::endl <<
-		"plot fileWin using 2:xtic(1) title \"Stones placed during winning game\" lc \"green\", fileLose using 2 title \"Stones placed during losing game\" lc \"red\"" << std::endl;
+		"plot fileWin using 2:xtic(1) title \"Stones placed during winning game\" lc \"#BDB8AD\", fileLose using 2 title \"Stones placed during losing game\" lc \"#44749D\"" << std::endl;
+}
+
+void PrintDotLegend(const char* folder, const char* dotFileName)
+{
+
+	std::ofstream dotFile;
+
+	char dotPath[64];
+	strcpy(dotPath, folder);
+	strcat(dotPath, dotFileName);
+
+	dotFile.open(dotPath, std::ios::out | std::ios::trunc);
+
+	if (dotFile.is_open())
+	{
+		dotFile << "digraph {" << std::endl <<
+			"subgraph cluster {"
+			"label = \"Legend\";" << std::endl <<
+			"\"Bottom Right (BR)\"[width = 1.5, height = 1.5, fixedsize = true, color = \"#44749D\", style = filled];" << std::endl <<
+			"\"Bottom Left (BL)\"[width = 1.5, height = 1.5, fixedsize = true, color = \"#C6D4E1\", style = filled];" << std::endl <<
+			"\"Top Right (TR)\"[width = 1.5, height = 1.5, fixedsize = true, color = \"#EBE7E0\", style = filled];" << std::endl <<
+			"\"Top Left (TL)\"[width = 1.5, height = 1.5, fixedsize = true, color = \"#BDB8AD\", style = filled];" << std::endl <<
+			"}\n}";
+	}
+	dotFile.close();
 }
 
 void PrintAllMovesInQuadrants(const char* folder, std::vector<std::vector<GoMove>>* matches, int nrOfMoves)
@@ -378,7 +407,7 @@ void PrintAllMovesInQuadrants(const char* folder, std::vector<std::vector<GoMove
 	nrOfMatches += PrintMovesInQuadrantsToCSV(folder, "BlackLose.csv", matches, true, false, nrOfMoves);
 	PrintMovesInQuadrantsToCSV(folder, "WhiteWin.csv", matches, false, false, nrOfMoves);
 	PrintMovesInQuadrantsToCSV(folder, "WhiteLose.csv", matches, false, true, nrOfMoves);
-
+	PrintDotLegend(folder, "legend.dot");
 	PrintTreeGP(folder, "BlackWin.csv", "BlackWin.gp", true, true, matches, nrOfMoves, nrOfMatches);
 
 	system("dot -Tpng ..\\Tree\\BlackWin.dot -o..\\Tree\\BlackWin.png");
@@ -522,19 +551,19 @@ void PrintTreeDOTHelper(std::stringstream* ss, node* parent, const char* parentN
 					{
 						// top left
 					case 0:
-						*ss << "TL, color = red]" << std::endl;
+						*ss << "TL, color = \"#BDB8AD\"]" << std::endl;
 						break;
 						// top right
 					case 1:
-						*ss << "TR, color = green]" << std::endl;
+						*ss << "TR, color = \"#EBE7E0\"]" << std::endl;
 						break;
 						// bot left
 					case 2:
-						*ss << "BL, color = blue]" << std::endl;
+						*ss << "BL, color = \"#C6D4E1\"]" << std::endl;
 						break;
 						// bot right
 					case 3:
-						*ss << "BR, color = orange]" << std::endl;
+						*ss << "BR, color = \"#44749D\"]" << std::endl;
 						break;
 					}
 				}
@@ -545,25 +574,25 @@ void PrintTreeDOTHelper(std::stringstream* ss, node* parent, const char* parentN
 			{
 				if (parent->nextMoves[i].movesMadeOnThis > 0)
 				{
-					*ss << parentName << (char)('A' + i) << "[ label = " << parent->nextMoves[i].movesMadeOnThis << ", width = " << parent->nextMoves[i].movesMadeOnThis/10 << ", height = " << parent->nextMoves[i].movesMadeOnThis/10 << ", style = filled, fillcolor = ";
+					*ss << parentName << (char)('A' + i) << "[ label = " << parent->nextMoves[i].movesMadeOnThis << "fontsize = " << (parent->nextMoves[i].movesMadeOnThis > 9 ? parent->nextMoves[i].movesMadeOnThis : 9) << ", width = " << parent->nextMoves[i].movesMadeOnThis/10 << ", height = " << parent->nextMoves[i].movesMadeOnThis/10 << ", style = filled, fillcolor = ";
 					
 						switch (i)
 						{
 							// top left
 						case 0:
-							*ss << "red";
+							*ss << "\"#BDB8AD\"";
 							break;
 							// top right
 						case 1:
-							*ss << "green";
+							*ss << "\"#EBE7E0\"";
 							break;
 							// bot left
 						case 2:
-							*ss << "blue";
+							*ss << "\"#C6D4E1\"";
 							break;
 							// bot right
 						case 3:
-							*ss << "orange";
+							*ss << "\"#44749D\"";
 							break;
 						}
 					*ss << "];" << std::endl;
@@ -600,6 +629,6 @@ void PrintTreeDOT(const char* folder, const char* dotFileName, node* root)
 		dotFile << "S [label = \"Start\"]" << std::endl;
 
 		dotFile << "}";
-
 	}
+	dotFile.close();
 }
